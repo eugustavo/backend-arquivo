@@ -16,7 +16,8 @@ export async function empresaAnalista(
     analista: z.any(),
   })
 
-  // const analistaJson: any = {}
+  let analistaJson
+  let todos: any = {}
   // let I: number
 
   const { data1, data2, analista } = bodySchema.parse(request.body)
@@ -30,9 +31,7 @@ export async function empresaAnalista(
       async function (err: any, result: any) {
         if (err) throw err
 
-        await result
-        console.log('ANALISTA: ', result)
-
+        analistaJson = await result
         db.detach()
       },
     )
@@ -43,13 +42,14 @@ export async function empresaAnalista(
       async function (err: any, result: any) {
         if (err) throw err
 
-        await result
-        console.log('TODOS RESULTADOS: ', result)
-
+        todos = await result
         db.detach()
       },
     )
   })
 
-  return reply.status(200).send()
+  return reply.status(200).send({
+    analista: analistaJson,
+    todos,
+  })
 }
