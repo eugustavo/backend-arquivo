@@ -29,10 +29,16 @@ export async function empresaAnalista(
       async function (err, result) {
         if (err) {
           console.log('Erro na Query: ', err);
-          reply.send(err)
+          reply.send({
+            message: 'Erro',
+            error: err,
+          })
         } else {
           console.log('Resultado: ', result);
-          reply.send(result)
+          reply.send({
+            message: 'Sucesso',
+            data: result,
+          })
         }
         db.detach();
       });
