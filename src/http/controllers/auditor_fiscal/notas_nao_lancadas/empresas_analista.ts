@@ -27,10 +27,10 @@ export function empresaAnalista(
     const analistaAux = db.query(
       empresasAnalista(data1, data2, analista),
       ['utf8'],
-      function (err: any, result: any) {
+      async function (err: any, result: any) {
         if (err) throw err
 
-        auxAnalista = result
+        auxAnalista = await result
         console.log('DENTRO DA FUNÇÃO ANALISTA: ', result)
 
         db.detach()
@@ -41,10 +41,10 @@ export function empresaAnalista(
     const todosAux = db.query(
       empresasAnalistaAll(data1, data2),
       ['utf8'],
-      function (err: any, result: any) {
+      async function (err: any, result: any) {
         if (err) throw err
 
-        auxTodos = result
+        auxTodos = await result
         console.log('DENTRO DA FUNÇÃO TODOS: ', result)
 
         db.detach()
