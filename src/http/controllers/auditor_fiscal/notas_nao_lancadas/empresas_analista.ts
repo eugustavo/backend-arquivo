@@ -16,41 +16,48 @@ export async function empresaAnalista(
     analista: z.any(),
   })
 
-  let analistaJson: any
-  let todos: any
-  // let I: number
+  let auxAnalista: any[] = []
+  let auxTodos: any[] = []
 
   const { data1, data2, analista } = bodySchema.parse(request.body)
 
-  Firebird.attach(options, function (err, db) {
+  Firebird.attach(options, function (err, db): any {
     if (err) throw err
 
-    db.query(
+    const analistaAux = db.query(
       empresasAnalista(data1, data2, analista),
       ['utf8'],
       function (err: any, result: any) {
         if (err) throw err
 
-        analistaJson = result
+        auxAnalista = result
+        console.log('DENTRO DA FUNÇÃO ANALISTA: ', result)
+
         db.detach()
+        return result
       },
     )
 
-    db.query(
+    const todosAux = db.query(
       empresasAnalistaAll(data1, data2),
       ['utf8'],
       function (err: any, result: any) {
         if (err) throw err
 
-        todos = result
+        auxTodos = result
+        console.log('DENTRO DA FUNÇÃO TODOS: ', result)
+
         db.detach()
+        return result
       },
     )
+
+    console.log('RETORNOS DAS FUNÇÕES: ', { analistaAux, todosAux })
   })
 
   return reply.status(200).send({
-    analista: analistaJson,
-    todos,
+    analista: auxAnalista,
+    todos: auxTodos,
     sqlAnalista: empresasAnalista(data1, data2, analista),
     sqlTodos: empresasAnalistaAll(data1, data2),
   })
