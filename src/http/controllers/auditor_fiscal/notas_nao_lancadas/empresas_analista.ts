@@ -25,12 +25,12 @@ export async function empresaAnalista(
     if (err) throw err
 
     db.query(
-      empresasAnalista(data1, data2, analista),[],
+      empresasAnalista(data1, data2, analista), [],
       async function (err, result) {
         if (err) {
           console.log('Erro na Query: ', err);
         } else {
-          console.log(result);
+          console.log('Resultado: ', result);
         }
         db.detach();
       });
