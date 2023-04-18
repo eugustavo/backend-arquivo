@@ -30,7 +30,9 @@ export function empresaAnalista(
       async function (err: any, result: any) {
         if (err) throw err
 
-        auxAnalista = await result
+        console.log(result)
+
+        auxAnalista = result
         console.log('DENTRO DA FUNÇÃO ANALISTA: ', result)
 
         db.detach()
@@ -44,7 +46,9 @@ export function empresaAnalista(
       async function (err: any, result: any) {
         if (err) throw err
 
-        auxTodos = await result
+        console.log(result)
+
+        auxTodos = result
         console.log('DENTRO DA FUNÇÃO TODOS: ', result)
 
         db.detach()
