@@ -16,7 +16,7 @@ export async function empresaAnalista(
     analista: z.any(),
   })
 
-  let analistaJson
+  let analistaJson: any = {}
   let todos: any = {}
   // let I: number
 
@@ -28,10 +28,10 @@ export async function empresaAnalista(
     db.query(
       empresasAnalista(data1, data2, analista),
       ['utf8'],
-      async function (err: any, result: any) {
+      function (err: any, result: any) {
         if (err) throw err
 
-        analistaJson = await result
+        analistaJson = result
         db.detach()
       },
     )
@@ -39,10 +39,10 @@ export async function empresaAnalista(
     db.query(
       empresasAnalistaAll(data1, data2),
       ['utf8'],
-      async function (err: any, result: any) {
+      function (err: any, result: any) {
         if (err) throw err
 
-        todos = await result
+        todos = result
         db.detach()
       },
     )
