@@ -23,7 +23,7 @@ export function empresaAnalista(
 
   console.log(data1, data2, analista)
 
-  Firebird.attach(options, function (err, db): any {
+  Firebird.attach(options, async function (err, db): Promise<void> {
     if (err) {
       console.log('Erro no Attach: ', err)
     }
@@ -49,7 +49,7 @@ export function empresaAnalista(
         db.detach();
       });
   });
-  
+
 
 }
 
