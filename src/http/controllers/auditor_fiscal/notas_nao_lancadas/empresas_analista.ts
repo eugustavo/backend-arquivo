@@ -24,41 +24,49 @@ export async function empresaAnalista(
   Firebird.attach(options, function (err, db): any {
     if (err) throw err
 
-    const analistaAux = db.query(
-      empresasAnalista(data1, data2, analista),
-      ['utf8'],
-      function (err: any, result: any) {
-        if (err) throw err
-
-        auxAnalista = result
-        console.log('DENTRO DA FUNÇÃO ANALISTA: ', result)
-
-        db.detach()
-        return result
-      },
-    )
-
-    const todosAux = db.query(
-      empresasAnalistaAll(data1, data2),
-      ['utf8'],
-      function (err: any, result: any) {
-        if (err) throw err
-
-        auxTodos = result
-        console.log('DENTRO DA FUNÇÃO TODOS: ', result)
-
-        db.detach()
-        return result
-      },
-    )
-
-    console.log('RETORNOS DAS FUNÇÕES: ', { analistaAux, todosAux })
-  })
-
-  return reply.status(200).send({
-    analista: auxAnalista,
-    todos: auxTodos,
-    sqlAnalista: empresasAnalista(data1, data2, analista),
-    sqlTodos: empresasAnalistaAll(data1, data2),
-  })
+    db.query(
+      empresasAnalista(data1, data2, analista),[],
+      async function (err, result) {
+        if (err) {
+          console.log('Erro na Query: ', err);
+        } else {
+          console.log(result);
+        }
+        db.detach();
+      });
+  });
 }
+
+  // const analistaAux = db.query(
+  //   empresasAnalista(data1, data2, analista),
+  //   ['utf8'],
+  //   function (err: any, result: any) {
+  //     if (err) throw err
+
+  //     auxAnalista = result
+  //     console.log('DENTRO DA FUNÇÃO ANALISTA: ', result)
+
+  //     db.detach()
+  //     return result
+  //   },
+  // )
+
+  // const todosAux = db.query(
+  //   empresasAnalistaAll(data1, data2),
+  //   ['utf8'],
+  //   function (err: any, result: any) {
+  //     if (err) throw err
+
+  //     auxTodos = result
+  //     console.log('DENTRO DA FUNÇÃO TODOS: ', result)
+
+  //     db.detach()
+  //     return result
+  //   },
+  // )
+
+
+
+
+
+
