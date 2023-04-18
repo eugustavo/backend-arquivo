@@ -24,7 +24,9 @@ export async function empresaAnalista(
   console.log(data1, data2, analista)
 
   Firebird.attach(options, function (err, db): any {
-    if (err) throw err
+    if (err) {
+      console.log('Erro no Attach: ', err)
+    }
 
     db.query(
       empresasAnalista(data1, data2, analista), [],
