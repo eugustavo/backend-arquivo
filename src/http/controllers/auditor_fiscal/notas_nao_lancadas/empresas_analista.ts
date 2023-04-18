@@ -21,68 +21,44 @@ export function empresaAnalista(
 
   const { data1, data2, analista } = bodySchema.parse(request.body)
 
-  console.log(data1, data2, analista)
+  Firebird.attach(options, function (err, db): any {
+    if (err) throw err
 
-  Firebird.attach(options, async function (err, db): Promise<void> {
-    if (err) {
-      console.log('Erro no Attach: ', err)
-    }
+    const analistaAux = db.query(
+      empresasAnalista(data1, data2, analista),
+      ['utf8'],
+      function (err: any, result: any) {
+        if (err) throw err
 
-    db.query(
-      empresasAnalista(data1, data2, analista), [],
-      async function (err, result) {
-        if (err) {
-          console.log('Erro na Query');
-          console.log('Erro na Query: ', err);
-          reply.send({
-            message: 'Erro',
-            error: err,
-          })
-        } else {
-          console.log('Sucesso na Query');
-          console.log('Resultado: ', result);
-          reply.send({
-            message: 'Sucesso',
-            data: result,
-          })
-        }
-        db.detach();
-      });
-  });
+        auxAnalista = result
+        console.log('DENTRO DA FUNÇÃO ANALISTA: ', result)
 
+        db.detach()
+        return result
+      },
+    )
 
+    const todosAux = db.query(
+      empresasAnalistaAll(data1, data2),
+      ['utf8'],
+      function (err: any, result: any) {
+        if (err) throw err
+
+        auxTodos = result
+        console.log('DENTRO DA FUNÇÃO TODOS: ', result)
+
+        db.detach()
+        return result
+      },
+    )
+
+    console.log('RETORNOS DAS FUNÇÕES: ', { analistaAux, todosAux })
+  })
+
+  return reply.status(200).send({
+    analista: auxAnalista,
+    todos: auxTodos,
+    sqlAnalista: empresasAnalista(data1, data2, analista),
+    sqlTodos: empresasAnalistaAll(data1, data2),
+  })
 }
-
-  // const analistaAux = db.query(
-  //   empresasAnalista(data1, data2, analista),
-  //   ['utf8'],
-  //   function (err: any, result: any) {
-  //     if (err) throw err
-
-  //     auxAnalista = result
-  //     console.log('DENTRO DA FUNÇÃO ANALISTA: ', result)
-
-  //     db.detach()
-  //     return result
-  //   },
-  // )
-
-  // const todosAux = db.query(
-  //   empresasAnalistaAll(data1, data2),
-  //   ['utf8'],
-  //   function (err: any, result: any) {
-  //     if (err) throw err
-
-  //     auxTodos = result
-  //     console.log('DENTRO DA FUNÇÃO TODOS: ', result)
-
-  //     db.detach()
-  //     return result
-  //   },
-  // )
-
-
-
-
-
-
