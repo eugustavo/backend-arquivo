@@ -36,17 +36,17 @@ export async function empresaAnalista(
       },
     )
 
-    // db.query(
-    //   empresasAnalistaAll(data1, data2),
-    //   [],
-    //   function (err: any, result: any) {
-    //     if (err) throw err
+    db.query(
+      empresasAnalistaAll(data1, data2),
+      ['utf8'],
+      function (err: any, result: any) {
+        if (err) throw err
 
-    //     console.log('TODOS RESULTADOS: ', result)
+        console.log('TODOS RESULTADOS: ', result)
 
-    //     db.detach()
-    //   },
-    // )
+        db.detach()
+      },
+    )
   })
 
   return reply.status(200).send()
