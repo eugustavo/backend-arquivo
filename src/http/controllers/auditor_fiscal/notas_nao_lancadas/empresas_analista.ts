@@ -24,29 +24,25 @@ export async function empresaAnalista(
   Firebird.attach(options, function (err, db) {
     if (err) throw err
 
-    db.query(
-      empresasAnalista(data1, data2, analista),
-      [],
-      function (err: any, result: any) {
-        if (err) throw err
+    db.query('SELECT * FROM estab', ['utf8'], function (err: any, result: any) {
+      if (err) throw err
 
-        console.log('ANALISTA: ', result)
+      console.log('ANALISTA: ', result)
 
-        db.detach()
-      },
-    )
+      db.detach()
+    })
 
-    db.query(
-      empresasAnalistaAll(data1, data2),
-      [],
-      function (err: any, result: any) {
-        if (err) throw err
+    // db.query(
+    //   empresasAnalistaAll(data1, data2),
+    //   [],
+    //   function (err: any, result: any) {
+    //     if (err) throw err
 
-        console.log('TODOS RESULTADOS: ', result)
+    //     console.log('TODOS RESULTADOS: ', result)
 
-        db.detach()
-      },
-    )
+    //     db.detach()
+    //   },
+    // )
   })
 
   return reply.status(200).send()
