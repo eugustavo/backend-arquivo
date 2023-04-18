@@ -1,67 +1,65 @@
-import { FastifyReply, FastifyRequest } from 'fastify'
+// import { FastifyReply, FastifyRequest } from 'fastify'
 
-export async function diferencaValorContabil(request: FastifyRequest, reply: FastifyReply) {
-  let resultJson, objEmpresa: any = {};
-  let listaPendencias, listaTodos: any = [];
-  let todos: string;
-  let pendentes, vinculados, auditados: number;
-  let I, J, K: number;
+// export async function diferencaValorContabil(request: FastifyRequest, reply: FastifyReply) {
+//   let resultJson, objEmpresa: any = {};
+//   let listaPendencias, listaTodos: any = [];
+//   let todos: string;
+//   let pendentes, vinculados, auditados: number;
+//   let I, J, K: number;
 
-  const { data1, data2, analista } = request.body;
+//   const { data1, data2, analista } = request.body;
 
+//   return reply.status(200).send()
+// }
 
-  return reply.status(200).send()
-}
+// THorse.Post('/auditor_fiscal/diferencial_aliquota/diferenca_valor_contabil',
+//         procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+//         var
+//             LBody, resultJson, objEmpresa: TJSONObject;
+//             listaPendencias, listaTodos: TJSONArray;
+//             data1, data2, analista, todos: String;
+//             pendentes, vinculados, auditados: Integer;
+//             I, J, K: Integer;
+//         begin
 
+//             AddLog('/auditor_fiscal/diferencial_aliquota/diferenca_valor_contabil');
 
-THorse.Post('/auditor_fiscal/diferencial_aliquota/diferenca_valor_contabil',
-        procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
-        var
-            LBody, resultJson, objEmpresa: TJSONObject;
-            listaPendencias, listaTodos: TJSONArray;
-            data1, data2, analista, todos: String;
-            pendentes, vinculados, auditados: Integer;
-            I, J, K: Integer;
-        begin
+//             LBody := Req.Body<TJSONObject>;
 
-            AddLog('/auditor_fiscal/diferencial_aliquota/diferenca_valor_contabil');
+//             analista := LBody.GetValue<string>('analista');
+//             data1 := LBody.GetValue<string>('data1');
+//             data2 := LBody.GetValue<string>('data2');
 
-            LBody := Req.Body<TJSONObject>;
+//             resultJson := TJSONObject.Create;
 
-            analista := LBody.GetValue<string>('analista');
-            data1 := LBody.GetValue<string>('data1');
-            data2 := LBody.GetValue<string>('data2');
+//             with Dm_Difal do
+//             begin
 
-            resultJson := TJSONObject.Create;
+//                 AddLog('Buscando Empresas do Analista: ' + analista);
 
-            with Dm_Difal do
-            begin
+//                 sql_Diferenca_Valor_Contabil_Eu.Active := False;
+//                 sql_Diferenca_Valor_Contabil_Eu.Params.ParamByName('ANALISTA').AsInteger := StrToInt(analista);
+//                 sql_Diferenca_Valor_Contabil_Eu.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+//                 sql_Diferenca_Valor_Contabil_Eu.Params.ParamByName('DATA2').AsDate := StrToDate(data1);
+//                 sql_Diferenca_Valor_Contabil_Eu.Active := True;
 
-                AddLog('Buscando Empresas do Analista: ' + analista);
+//                 AddLog('Registros Localizados: ' + IntToStr(sql_Diferenca_Valor_Contabil_Eu.RecordCount));
 
-                sql_Diferenca_Valor_Contabil_Eu.Active := False;
-                sql_Diferenca_Valor_Contabil_Eu.Params.ParamByName('ANALISTA').AsInteger := StrToInt(analista);
-                sql_Diferenca_Valor_Contabil_Eu.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
-                sql_Diferenca_Valor_Contabil_Eu.Params.ParamByName('DATA2').AsDate := StrToDate(data1);
-                sql_Diferenca_Valor_Contabil_Eu.Active := True;
+//                 resultJson.AddPair('eu', sql_Diferenca_Valor_Contabil_Eu.toJSONArray());
 
-                AddLog('Registros Localizados: ' + IntToStr(sql_Diferenca_Valor_Contabil_Eu.RecordCount));
+//                 AddLog('Buscando Todas as Empresas');
 
-                resultJson.AddPair('eu', sql_Diferenca_Valor_Contabil_Eu.toJSONArray());
+//                 sql_Diferenca_Valor_Contabil_Todos.Active := False;
+//                 sql_Diferenca_Valor_Contabil_Todos.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+//                 sql_Diferenca_Valor_Contabil_Todos.Params.ParamByName('DATA2').AsDate := StrToDate(data1);
+//                 sql_Diferenca_Valor_Contabil_Todos.Active := True;
 
-                AddLog('Buscando Todas as Empresas');
+//                 AddLog('Registros Localizados: ' + IntToStr(sql_Diferenca_Valor_Contabil_Todos.RecordCount));
 
-                sql_Diferenca_Valor_Contabil_Todos.Active := False;
-                sql_Diferenca_Valor_Contabil_Todos.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
-                sql_Diferenca_Valor_Contabil_Todos.Params.ParamByName('DATA2').AsDate := StrToDate(data1);
-                sql_Diferenca_Valor_Contabil_Todos.Active := True;
+//                 resultJson.AddPair('todos', sql_Diferenca_Valor_Contabil_Todos.toJSONArray());
 
-                AddLog('Registros Localizados: ' + IntToStr(sql_Diferenca_Valor_Contabil_Todos.RecordCount));
+//             end;
 
-                resultJson.AddPair('todos', sql_Diferenca_Valor_Contabil_Todos.toJSONArray());
+//             Res.Send<TJSONObject>(resultJson);
 
-            end;
-
-            Res.Send<TJSONObject>(resultJson);
-
-        end);
+//         end);
