@@ -28,7 +28,7 @@ export function empresaAnalista(
       console.log('Erro no Attach: ', err)
     }
 
-    const consulta = db.query(
+    db.query(
       empresasAnalista(data1, data2, analista), [],
       async function (err, result) {
         if (err) {
