@@ -29,8 +29,10 @@ export async function empresaAnalista(
       async function (err, result) {
         if (err) {
           console.log('Erro na Query: ', err);
+          reply.send(err)
         } else {
           console.log('Resultado: ', result);
+          reply.send(result)
         }
         db.detach();
       });
