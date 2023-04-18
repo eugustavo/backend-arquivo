@@ -26,6 +26,7 @@ export async function empresaAnalista(
 
     db.query(
       empresasAnalista(data1, data2, analista),
+      [],
       function (err: any, result: any) {
         if (err) throw err
 
@@ -33,11 +34,11 @@ export async function empresaAnalista(
 
         db.detach()
       },
-      () => {},
     )
 
     db.query(
       empresasAnalistaAll(data1, data2),
+      [],
       function (err: any, result: any) {
         if (err) throw err
 
@@ -45,7 +46,6 @@ export async function empresaAnalista(
 
         db.detach()
       },
-      () => {},
     )
   })
 
