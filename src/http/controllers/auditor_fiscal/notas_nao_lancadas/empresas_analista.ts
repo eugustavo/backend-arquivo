@@ -28,9 +28,9 @@ export async function empresaAnalista(
       console.log('Erro no Attach: ', err)
     }
 
-    db.query(
+    const consulta = db.query(
       empresasAnalista(data1, data2, analista), [],
-      function (err, result) {
+      async function (err, result) {
         if (err) {
           console.log('Erro na Query');
           console.log('Erro na Query: ', err);
@@ -49,6 +49,8 @@ export async function empresaAnalista(
         db.detach();
       });
   });
+  
+
 }
 
   // const analistaAux = db.query(
