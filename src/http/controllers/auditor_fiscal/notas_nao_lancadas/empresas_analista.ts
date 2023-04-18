@@ -26,7 +26,7 @@ export async function empresaAnalista(
 
     db.query(
       empresasAnalista(data1, data2, analista), [],
-      async function (err, result) {
+      function (err, result) {
         if (err) {
           console.log('Erro na Query: ', err);
           reply.send({
