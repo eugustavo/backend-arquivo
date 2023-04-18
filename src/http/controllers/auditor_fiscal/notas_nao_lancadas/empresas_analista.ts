@@ -21,7 +21,7 @@ export function empresaAnalista(
 
   const { data1, data2, analista } = bodySchema.parse(request.body)
 
-  Firebird.attach(options, function (err, db): any {
+  Firebird.attach(options, async function (err, db): Promise<any> {
     if (err) throw err
 
     const analistaAux = db.query(
