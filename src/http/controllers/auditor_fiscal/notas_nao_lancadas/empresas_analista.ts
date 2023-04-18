@@ -24,6 +24,8 @@ export function empresaAnalista(
   Firebird.attach(options, async function (err, db): Promise<any> {
     if (err) throw err
 
+    console.log(data1, data2, analista)
+
     const analistaAux = db.query(
       empresasAnalista(data1, data2, analista),
       ['utf8'],
