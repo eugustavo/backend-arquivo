@@ -21,6 +21,8 @@ export async function empresaAnalista(
 
   const { data1, data2, analista } = bodySchema.parse(request.body)
 
+  console.log(data1, data2, analista)
+
   Firebird.attach(options, function (err, db): any {
     if (err) throw err
 
