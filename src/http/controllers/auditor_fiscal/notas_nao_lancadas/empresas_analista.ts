@@ -16,7 +16,7 @@ export async function empresaAnalista(
     analista: z.any(),
   })
 
-  const { data1, data2, analista } = bodySchema.parse(request.body)    
+  const { data1, data2, analista } = bodySchema.parse(request.body)
 
   reply.send({
     analista: await EmpresasAnalista(data1, data2, analista)
