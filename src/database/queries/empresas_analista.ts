@@ -1,5 +1,5 @@
 export function empresasAnalista(data1: any, data2: any, analista: any) {
-  return `"SELECT
+  return `SELECT
   d.nomeusuario,
   b.INSCRFEDERAL,
   b.NOMEESTAB,
@@ -21,5 +21,5 @@ export function empresasAnalista(data1: any, data2: any, analista: any) {
   AND a.chavenfeentref is null
   AND c.CODIGOESTAB IS NULL
   group by 1,2,3,4,5
-  order by 6 desc"`
+  order by 6 desc`
 }

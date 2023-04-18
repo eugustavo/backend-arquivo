@@ -4,6 +4,4 @@ export const options = {
   database: '/Dados/base-oficial/nQuestor.FDB',
   user: 'sysdba',
   password: 'dbaarq16',
-  lowercase_keys: false,
-  pageSize: 4096,
 }

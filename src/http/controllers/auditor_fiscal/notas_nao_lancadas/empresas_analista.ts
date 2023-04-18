@@ -16,8 +16,8 @@ export async function empresaAnalista(
     analista: z.any(),
   })
 
-  let analistaJson: any = {}
-  let todos: any = {}
+  let analistaJson: any
+  let todos: any
   // let I: number
 
   const { data1, data2, analista } = bodySchema.parse(request.body)
