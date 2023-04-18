@@ -51,5 +51,7 @@ export async function empresaAnalista(
   return reply.status(200).send({
     analista: analistaJson,
     todos,
+    sqlAnalista: empresasAnalista(data1, data2, analista),
+    sqlTodos: empresasAnalistaAll(data1, data2),
   })
 }
