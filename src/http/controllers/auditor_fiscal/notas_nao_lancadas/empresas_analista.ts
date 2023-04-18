@@ -32,12 +32,14 @@ export async function empresaAnalista(
       empresasAnalista(data1, data2, analista), [],
       function (err, result) {
         if (err) {
+          console.log('Erro na Query');
           console.log('Erro na Query: ', err);
           reply.send({
             message: 'Erro',
             error: err,
           })
         } else {
+          console.log('Sucesso na Query');
           console.log('Resultado: ', result);
           reply.send({
             message: 'Sucesso',
