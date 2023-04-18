@@ -27,9 +27,10 @@ export async function empresaAnalista(
     db.query(
       empresasAnalista(data1, data2, analista),
       ['utf8'],
-      function (err: any, result: any) {
+      async function (err: any, result: any) {
         if (err) throw err
 
+        await result
         console.log('ANALISTA: ', result)
 
         db.detach()
@@ -39,9 +40,10 @@ export async function empresaAnalista(
     db.query(
       empresasAnalistaAll(data1, data2),
       ['utf8'],
-      function (err: any, result: any) {
+      async function (err: any, result: any) {
         if (err) throw err
 
+        await result
         console.log('TODOS RESULTADOS: ', result)
 
         db.detach()
