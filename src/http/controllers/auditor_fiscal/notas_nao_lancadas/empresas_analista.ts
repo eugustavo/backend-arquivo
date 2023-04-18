@@ -6,7 +6,7 @@ import { empresasAnalista } from '@/database/queries/empresas_analista'
 import { z } from 'zod'
 import { empresasAnalistaAll } from '@/database/queries/empresas_analista_all'
 
-export async function empresaAnalista(
+export function empresaAnalista(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
