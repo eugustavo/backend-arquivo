@@ -56,7 +56,7 @@ export function empresaAnalista(
       },
     )
 
-    console.log('RETORNOS DAS FUNÇÕES: ', { analistaAux, todosAux })
+    // console.log('RETORNOS DAS FUNÇÕES: ', { analistaAux, todosAux })
   })
 
   return reply.status(200).send({
