@@ -1,5 +1,4 @@
 import { FastifyInstance } from 'fastify'
-import { helloWorld } from '../controllers/hello-world'
 
 import { notasNaoLancadas } from '../controllers/auditor_fiscal/notas_nao_lancadas/notas-nao-lancadas'
 import { empresaAnalista } from '../controllers/auditor_fiscal/notas_nao_lancadas/empresas_analista'
@@ -16,9 +15,6 @@ import { diferencaValorContabilRevisaoProdutos } from '../controllers/auditor_fi
 import { diferencaValorContabilRevisaoFornecedores } from '../controllers/auditor_fiscal/diferencial_aliquota/revisao_fornecedores'
 
 export async function appRoutes(app: FastifyInstance) {
-  app.get('/', helloWorld)
-
-  //
   // Notas não lançadas
   app.post('/auditor_fiscal/notas_nao_lancadas', notasNaoLancadas)
   app.post(
