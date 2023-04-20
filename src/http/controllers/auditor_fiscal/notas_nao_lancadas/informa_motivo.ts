@@ -1,10 +1,16 @@
-// import { FastifyReply, FastifyRequest } from 'fastify'
+import { FastifyReply, FastifyRequest } from 'fastify'
+import { z } from 'zod'
 
-// export async function informaMotivo(request: FastifyRequest, reply: FastifyReply) {
-//   let analistaJson: any = {};
-//   let I: number;
+export async function informaMotivo(
+  request: FastifyRequest,
+  reply: FastifyReply,
+) {
+  const bodySchema = z.object({
+    chave: z.any(),
+    motivo: z.any(),
+  })
 
-//   const { chave, motivo } = request.body;
+  const { chave, motivo } = bodySchema.parse(request.body)
 
-//   return reply.status(200).send()
-// }
+  return reply.status(200).send('OK')
+}

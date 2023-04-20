@@ -1,10 +1,8 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import firebird from 'node-firebird'
-import { options } from '@/lib/firebird'
+import { z } from 'zod'
 
 import { EmpresasAnalista } from '@/database/queries/empresas_analista'
-import { any, z } from 'zod'
-import { empresasAnalistaAll } from '@/database/queries/empresas_analista_all'
+import { EmpresasAnalistaAll } from '@/database/queries/empresas_analista_all'
 
 export async function empresaAnalista(
   request: FastifyRequest,
@@ -19,7 +17,7 @@ export async function empresaAnalista(
   const { data1, data2, analista } = bodySchema.parse(request.body)
 
   reply.send({
-    analista: await EmpresasAnalista(data1, data2, analista)
+    eu: await EmpresasAnalista(data1, data2, analista),
+    todos: await EmpresasAnalistaAll(data1, data2),
   })
-
 }
