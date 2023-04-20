@@ -5,7 +5,6 @@ import { empresaAnalista } from '../controllers/auditor_fiscal/notas_nao_lancada
 import { informaMotivo } from '../controllers/auditor_fiscal/notas_nao_lancadas/informa_motivo'
 
 import { cfopProdutos } from '../controllers/auditor_fiscal/cfop_produtos/cfop_produtos'
-import { detalhe } from '../controllers/auditor_fiscal/cfop_produtos/detalhe'
 import { atualizar } from '../controllers/auditor_fiscal/cfop_produtos/atualizar'
 
 import { diferencaValorContabil } from '../controllers/auditor_fiscal/diferencial_aliquota/diferenca_valor_contabil'
@@ -25,7 +24,6 @@ export async function appRoutes(app: FastifyInstance) {
 
   // CFOP Produtos
   app.post('/auditor_fiscal/cfop_produtos', cfopProdutos)
-  app.post('/auditor_fiscal/cfop_produtos/detalhe', detalhe)
   app.post('/auditor_fiscal/cfop_produtos/atualizar', atualizar)
 
   // Diferencial de Aliquota
