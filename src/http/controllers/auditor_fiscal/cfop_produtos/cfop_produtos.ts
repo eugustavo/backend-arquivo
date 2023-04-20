@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
+import { CfopProdutosDetalhe } from '@/database/queries/cfop_produtos/detalhe'
 
 export async function cfopProdutos(
   request: FastifyRequest,
@@ -12,10 +13,7 @@ export async function cfopProdutos(
     estab: z.any(),
   })
 
-  const { data1, data2, analista, todos } = bodySchema.parse(request.body)
+  const { data1, data2, empresa, estab } = bodySchema.parse(request.body)
 
-  return reply.status(200).send({
-    eu: '',
-    todos: '',
-  })
+  return reply.status(200).send(await CfopProdutosDetalhe(data1, data2, empresa, estab))
 }
