@@ -1,0 +1,967 @@
+unit UPrincipal;
+
+interface
+
+uses
+    Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+    System.Classes, Vcl.Graphics, IdSSLOpenSSL,
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+    Horse,
+    Horse.BasicAuthentication,
+    Horse.Utils.ClientIP,
+    Horse.Logger,
+    Horse.Logger.Provider.LogFile,
+    Horse.CORS,
+    Horse.Jhonson,
+    Vcl.Imaging.pngimage, Vcl.ExtCtrls, System.JSON, DataSet.Serialize,
+    Vcl.StdCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error,
+    FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool,
+    FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Phys.FB, FireDAC.Phys.FBDef,
+    FireDAC.VCLUI.Wait, Data.DB, FireDAC.Comp.Client, FireDAC.Phys.IBBase;
+
+type
+    TtelaApi = class(TForm)
+        Image1: TImage;
+        lbStauts: TLabel;
+        pnTop: TPanel;
+        lbLog: TListBox;
+        conexaoFB: TFDConnection;
+        FDPhysFBDriverLink1: TFDPhysFBDriverLink;
+        procedure FormShow(Sender: TObject);
+        procedure FormCreate(Sender: TObject);
+    private
+        procedure AddLog(texto: string);
+        { Private declarations }
+    public
+        { Public declarations }
+    end;
+
+var
+    telaApi: TtelaApi;
+    LLogFileConfig: THorseLoggerLogFileConfig;
+    LPemPath: string;
+
+implementation
+
+{$R *.dfm}
+
+uses UDm_NotasNaoLancadas, UDm_CfopProdutos, UDm_Listas, UDm_Difal;
+
+procedure TtelaApi.AddLog(texto: string);
+var
+    arq: TextFile;
+    Caminho: String;
+    textocompleto: String;
+begin
+
+    try
+        Caminho := 'C:\OutBox\Api-Questor\Log\log_' + FormatDateTime('yyyy-mm-dd', Now) + '.txt';
+        AssignFile(arq, Caminho);
+        if FileExists(Caminho) then
+            Append(arq)
+        else
+            Rewrite(arq);
+        textocompleto := DateTimeToStr(Now) + '  -  ' + texto;
+        Writeln(arq, textocompleto);
+    finally
+        CloseFile(arq);
+    end;
+
+    lbLog.Items.Add(textocompleto);
+    lbLog.ItemIndex := lbLog.ItemIndex + 1;
+
+end;
+
+procedure TtelaApi.FormCreate(Sender: TObject);
+begin
+
+    conexaoFB.Connected := False;
+    conexaoFB.Params.Clear;
+    conexaoFB.DriverName := 'FB';
+
+    if ParamStr(1) = 'TESTE' then
+    begin
+        conexaoFB.Params.Add('Database=/Dados/base-teste/base-teste1.FDB');
+        conexaoFB.Params.Add('Server=192.168.16.164');
+    end
+    else
+    begin
+        conexaoFB.Params.Add('Database=/Dados/base-oficial/nQuestor.FDB');
+        conexaoFB.Params.Add('Server=192.168.16.158');
+    end;
+
+    conexaoFB.Params.Add('User_Name=SYSDBA');
+    conexaoFB.Params.Add('Protocol=TCPIP');
+    conexaoFB.Params.Add('Port=3050');
+    conexaoFB.Params.Add('Password=dbaarq16');
+
+    conexaoFB.Connected := True;
+
+    AddLog('Banco Conectado com Sucesso!');
+    AddLog('Banco Conectado: ' + conexaoFB.Params.Database);
+
+    Dm_NotasNaoLancadas := TDm_NotasNaoLancadas.Create(Self);
+    Dm_CfopProdutos := TDm_CfopProdutos.Create(Self);
+    Dm_Listas := TDm_Listas.Create(Self);
+    Dm_Difal := TDm_Difal.Create(Self);
+
+    THorse.Use(CORS);
+    THorse.Use(Jhonson());
+
+    // THorse.Use(HorseBasicAuthentication(
+    // function(const AUsername, APassword: string): Boolean
+    // begin
+    // Result := AUsername.Equals('user') and APassword.Equals('password');
+    // end));
+
+
+    // HorseCORS
+    // .AllowedOrigin('*')
+    // .AllowedCredentials('true')
+    // .AllowedHeaders('*')
+    // .AllowedMethods('*')
+    // .ExposedHeaders('*');
+
+    // It's necessary to add the middleware in the Horse:
+
+    LPemPath := 'C:\OutBox\Api-Questor\cert';
+
+    THorse.IOHandleSSL.CertFile := LPemPath + '.crt';
+    THorse.IOHandleSSL.KeyFile := LPemPath + '.key';
+    THorse.IOHandleSSL.SSLVersions := [sslvSSLv2, sslvSSLv23, sslvSSLv3, sslvTLSv1, sslvTLSv1_1, sslvTLSv1_2];
+    THorse.IOHandleSSL.Active := True;
+end;
+
+procedure TtelaApi.FormShow(Sender: TObject);
+begin
+
+    LLogFileConfig := THorseLoggerLogFileConfig.New.SetLogFormat
+      ('${request_clientip} [${time}] ${request_user_agent} "${request_method} ${request_path_info} ${request_version}" ${response_status} ${response_content_length}')
+      .SetDir('C:\OutBox\Api-Questor\Log');
+
+    THorseLoggerManager.RegisterProvider(THorseLoggerProviderLogFile.New(LLogFileConfig));
+
+    THorse.Use(THorseLoggerManager.HorseCallback);
+
+    THorse.Get('/ping',
+        procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+        begin
+            AddLog('Endpoint Acionado: ping');
+            conexaoFB.Connected := True;
+            Res.Send(conexaoFB.Params.Database);
+        end);
+
+    THorse.Post('/auditor_fiscal/notas_nao_lancadas',
+        procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+        var
+            LBody, Notas: TJSONObject;
+            empresa, estab, data1, data2: String;
+            I: Integer;
+        begin
+
+            AddLog('Endpoint Acionado: auditor_fiscal/notas_nao_lancadas');
+
+            LBody := Req.Body<TJSONObject>;
+
+            empresa := LBody.GetValue<string>('empresa');
+            estab := LBody.GetValue<string>('estab');
+            data1 := LBody.GetValue<string>('data1');
+            data2 := LBody.GetValue<string>('data2');
+
+            conexaoFB.Connected := True;
+
+            AddLog('Buscando Dados da Empresa: ' + empresa);
+
+            Notas := TJSONObject.Create;
+
+            with Dm_NotasNaoLancadas do
+            begin
+
+                AddLog('Buscando Notas Modelo 55');
+
+                sqlModelo55.Active := False;
+                sqlModelo55.Params.ParamByName('EMPRESA').AsInteger := StrToInt(empresa);
+                sqlModelo55.Params.ParamByName('ESTAB').AsInteger := StrToInt(estab);
+                sqlModelo55.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                sqlModelo55.Params.ParamByName('DATA2').AsDate := StrToDate(data2);
+                sqlModelo55.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sqlModelo55.RecordCount));
+
+                Notas.AddPair('notas_55', sqlModelo55.toJSONArray());
+
+                AddLog('Buscando Notas Modelo 57');
+
+                sqlModelo57.Active := False;
+                sqlModelo57.Params.ParamByName('EMPRESA').AsInteger := StrToInt(empresa);
+                sqlModelo57.Params.ParamByName('ESTAB').AsInteger := StrToInt(estab);
+                sqlModelo57.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                sqlModelo57.Params.ParamByName('DATA2').AsDate := StrToDate(data2);
+                sqlModelo57.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sqlModelo57.RecordCount));
+
+                Notas.AddPair('notas_57', sqlModelo57.toJSONArray());
+
+            end;
+
+            Res.Send<TJSONObject>(Notas);
+
+        end);
+
+    THorse.Post('/auditor_fiscal/notas_nao_lancadas/empresas_analista',
+        procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+        var
+            LBody, analistaJson: TJSONObject;
+            data1, data2, analista: String;
+            I: Integer;
+        begin
+
+            AddLog('/auditor_fiscal/notas_nao_lancadas/empresas_analista');
+
+            LBody := Req.Body<TJSONObject>;
+
+            analista := LBody.GetValue<string>('analista');
+            data1 := LBody.GetValue<string>('data1');
+            data2 := LBody.GetValue<string>('data2');
+
+            conexaoFB.Connected := True;
+
+            analistaJson := TJSONObject.Create;
+
+            with Dm_NotasNaoLancadas do
+            begin
+
+                AddLog('Buscando Notas Pendentes do Analista: ' + analista);
+
+                sqlEmpresasAnalista.Active := False;
+                sqlEmpresasAnalista.Params.ParamByName('ANALISTA').AsInteger := StrToInt(analista);
+                sqlEmpresasAnalista.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                sqlEmpresasAnalista.Params.ParamByName('DATA2').AsDate := StrToDate(data2);
+                sqlEmpresasAnalista.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sqlEmpresasAnalista.RecordCount));
+
+                analistaJson.AddPair('eu', sqlEmpresasAnalista.toJSONArray());
+
+                AddLog('Buscando Notas Pendentes de Todos');
+
+                sqlEmpresas.Active := False;
+                sqlEmpresas.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                sqlEmpresas.Params.ParamByName('DATA2').AsDate := StrToDate(data2);
+                sqlEmpresas.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sqlEmpresas.RecordCount));
+
+                analistaJson.AddPair('todos', sqlEmpresas.toJSONArray());
+
+            end;
+
+            Res.Send<TJSONObject>(analistaJson);
+
+        end);
+
+    THorse.Post('/auditor_fiscal/notas_nao_lancadas/informa_motivo',
+        procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+        var
+            LBody, analistaJson: TJSONObject;
+            chave, motivo: String;
+            I: Integer;
+        begin
+
+            AddLog('/auditor_fiscal/notas_nao_lancadas/informa_motivo');
+
+            LBody := Req.Body<TJSONObject>;
+
+            chave := LBody.GetValue<string>('chave');
+            motivo := LBody.GetValue<string>('motivo');
+
+            with Dm_NotasNaoLancadas do
+            begin
+
+                AddLog('Atualizando Motivo da Nota Chave: ' + chave);
+                AddLog('Motivo: ' + motivo);
+                AddLog('Chave: ' + chave);
+
+                sqlUpdateMotivo.Params.ParamByName('MOTIVO').asstring := motivo;
+                sqlUpdateMotivo.Params.ParamByName('CHAVE').asstring := chave;
+                sqlUpdateMotivo.Prepare;
+                sqlUpdateMotivo.ExecSQL;
+
+            end;
+
+            Res.Send('OK');
+
+        end);
+
+    THorse.Post('/auditor_fiscal/cfop_produtos/detalhe',
+        procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+        var
+            LBody, resultJson: TJSONObject;
+            data1, data2, empresa, estab: String;
+            I: Integer;
+        begin
+
+            AddLog('/auditor_fiscal/cfop_produtos/detalhe');
+
+            LBody := Req.Body<TJSONObject>;
+
+            empresa := LBody.GetValue<string>('empresa');
+            estab := LBody.GetValue<string>('estab');
+            data1 := LBody.GetValue<string>('data1');
+            data2 := LBody.GetValue<string>('data2');
+
+            conexaoFB.Connected := True;
+
+            resultJson := TJSONObject.Create;
+
+            with Dm_CfopProdutos do
+            begin
+
+                AddLog('Buscando Produtos da Empresa: ' + empresa + ', Estab: ' + estab);
+
+                sqlDetalhe.Active := False;
+                sqlDetalhe.Params.ParamByName('EMPRESA1').AsInteger := StrToInt(empresa);
+                sqlDetalhe.Params.ParamByName('ESTAB1').AsInteger := StrToInt(estab);
+                sqlDetalhe.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                sqlDetalhe.Params.ParamByName('DATA2').AsDate := StrToDate(data2);
+                sqlDetalhe.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sqlDetalhe.RecordCount));
+
+                resultJson.AddPair('empresa', Dm_CfopProdutos.sqlDetalhe.FieldByName('nomeestab').asstring);
+                resultJson.AddPair('detalhe', sqlDetalhe.toJSONArray());
+
+            end;
+
+            with Dm_Listas do
+            begin
+
+                AddLog('Buscando CFOPS Validos da Empresa: ' + empresa + ', Estab: ' + estab);
+
+                sqlCFOP.Active := False;
+                sqlCFOP.Params.ParamByName('EMPRESA').AsInteger := StrToInt(empresa);
+                sqlCFOP.Params.ParamByName('ESTAB').AsInteger := StrToInt(estab);
+                sqlCFOP.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sqlCFOP.RecordCount));
+
+                resultJson.AddPair('cfop', sqlCFOP.toJSONArray());
+
+            end;
+
+            with Dm_Listas do
+            begin
+
+                AddLog('Buscando CST ICMS');
+
+                sqlCstIcms.Active := False;
+                sqlCstIcms.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sqlCstIcms.RecordCount));
+
+                resultJson.AddPair('cst_icms', sqlCstIcms.toJSONArray());
+
+            end;
+
+            with Dm_Listas do
+            begin
+
+                AddLog('Buscando CST IPI');
+
+                sqlCstIpi.Active := False;
+                sqlCstIpi.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sqlCstIpi.RecordCount));
+
+                resultJson.AddPair('cst_ipi', sqlCstIpi.toJSONArray());
+
+            end;
+
+            Res.Send<TJSONObject>(resultJson);
+
+        end);
+
+    THorse.Post('/auditor_fiscal/cfop_produtos',
+        procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+        var
+            LBody, resultJson, objEmpresa: TJSONObject;
+            listaPendencias, listaTodos: TJSONArray;
+            data1, data2, analista, todos: String;
+            pendentes, vinculados, auditados: Integer;
+            I, J, K: Integer;
+        begin
+
+            AddLog('/auditor_fiscal/cfop_produtos');
+
+            LBody := Req.Body<TJSONObject>;
+
+            analista := LBody.GetValue<string>('analista');
+            todos := LBody.GetValue<string>('todos');
+            data1 := LBody.GetValue<string>('data1');
+            data2 := LBody.GetValue<string>('data2');
+
+            resultJson := TJSONObject.Create;
+            listaPendencias := TJSONArray.Create;
+            listaTodos := TJSONArray.Create;
+
+            with Dm_Listas do
+            begin
+
+                AddLog('Buscando Empresas do Analista: ' + analista);
+
+                sqlEmpresasAnalista.Active := False;
+                sqlEmpresasAnalista.Params.ParamByName('ANALISTA').AsInteger := StrToInt(analista);
+                sqlEmpresasAnalista.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sqlEmpresasAnalista.RecordCount));
+
+                for I := 0 to sqlEmpresasAnalista.RecordCount - 1 do
+
+                begin
+
+                    with Dm_CfopProdutos do
+                    begin
+
+                        AddLog('Buscando Produtos da Empresa: ' + sqlEmpresasAnalista.FieldByName('CODIGOEMPRESA').asstring + ', Estab: ' +
+                          sqlEmpresasAnalista.FieldByName('CODIGOESTAB').asstring);
+
+                        sqlDetalhe.Active := False;
+                        sqlDetalhe.Params.ParamByName('EMPRESA1').AsInteger := StrToInt(sqlEmpresasAnalista.FieldByName('CODIGOEMPRESA').asstring);
+                        sqlDetalhe.Params.ParamByName('ESTAB1').AsInteger := StrToInt(sqlEmpresasAnalista.FieldByName('CODIGOESTAB').asstring);
+                        sqlDetalhe.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                        sqlDetalhe.Params.ParamByName('DATA2').AsDate := StrToDate(data2);
+                        sqlDetalhe.Active := True;
+
+                        AddLog('Registros Localizados: ' + IntToStr(sqlDetalhe.RecordCount));
+
+                        if (sqlDetalhe.RecordCount > 0) then
+                        begin
+
+                            try
+
+                                pendentes := 0;
+                                vinculados := 0;
+                                auditados := 0;
+
+                                objEmpresa := TJSONObject.Create;
+
+                                objEmpresa.AddPair('empresa', sqlDetalhe.FieldByName('CODIGOEMPRESA').asstring);
+                                objEmpresa.AddPair('estab', sqlDetalhe.FieldByName('codigoestab').asstring);
+                                objEmpresa.AddPair('nome', sqlDetalhe.FieldByName('nomeestab').asstring);
+
+                                for J := 0 to sqlDetalhe.RecordCount - 1 do
+                                begin
+
+                                    if (sqlDetalhe.FieldByName('CFOP_REL').asstring <> sqlDetalhe.FieldByName('CODIGOCFOP').asstring) then
+                                    begin
+                                        pendentes := pendentes + 1;
+                                    end;
+
+                                    if ((sqlDetalhe.FieldByName('CFOP_REL').asstring = sqlDetalhe.FieldByName('CODIGOCFOP').asstring) and
+                                      (sqlDetalhe.FieldByName('CSTIPI').AsInteger <> 49)) then
+                                    begin
+                                        vinculados := vinculados + 1;
+                                    end;
+
+                                    if ((sqlDetalhe.FieldByName('CFOP_REL').asstring = sqlDetalhe.FieldByName('CODIGOCFOP').asstring) and
+                                      (sqlDetalhe.FieldByName('CSTIPI').AsInteger = 49)) then
+                                    begin
+                                        auditados := auditados + 1;
+                                    end;
+
+                                    sqlDetalhe.Next;
+
+                                end;
+
+                                objEmpresa.AddPair('pendentes', TJSONNumber.Create(pendentes));
+                                objEmpresa.AddPair('vinculados', TJSONNumber.Create(vinculados));
+                                objEmpresa.AddPair('auditados', TJSONNumber.Create(auditados));
+
+                                AddLog('Objeto Criado: ' + objEmpresa.ToString);
+
+                                listaPendencias.Add(objEmpresa);
+
+                            finally
+                                // objEmpresa.Free;
+                            end;
+
+                        end;
+
+                        sqlEmpresasAnalista.Next;
+
+                    end;
+
+                end;
+
+                resultJson.AddPair('eu', listaPendencias);
+
+                if (todos = 'SIM') then
+                begin
+                    AddLog('Buscando Empresas Ativas');
+
+                    sqlEmpresasAtivas.Active := False;
+                    sqlEmpresasAtivas.Active := True;
+
+                    AddLog('Registros Localizados: ' + IntToStr(sqlEmpresasAtivas.RecordCount));
+
+                    for I := 0 to sqlEmpresasAtivas.RecordCount - 1 do
+
+                    begin
+                        with Dm_CfopProdutos do
+                        begin
+
+                            AddLog('Buscando Produtos da Empresa: ' + sqlEmpresasAtivas.FieldByName('CODIGOEMPRESA').asstring + ', Estab: ' +
+                              sqlEmpresasAtivas.FieldByName('CODIGOESTAB').asstring);
+
+                            sqlDetalhe.Active := False;
+                            sqlDetalhe.Params.ParamByName('EMPRESA1').AsInteger := StrToInt(sqlEmpresasAtivas.FieldByName('CODIGOEMPRESA').asstring);
+                            sqlDetalhe.Params.ParamByName('ESTAB1').AsInteger := StrToInt(sqlEmpresasAtivas.FieldByName('CODIGOESTAB').asstring);
+                            sqlDetalhe.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                            sqlDetalhe.Params.ParamByName('DATA2').AsDate := StrToDate(data2);
+                            sqlDetalhe.Active := True;
+
+                            AddLog('Registros Localizados: ' + IntToStr(sqlDetalhe.RecordCount));
+
+                            if (sqlDetalhe.RecordCount > 0) then
+                            begin
+
+                                try
+
+                                    pendentes := 0;
+                                    vinculados := 0;
+                                    auditados := 0;
+
+                                    objEmpresa := TJSONObject.Create;
+
+                                    objEmpresa.AddPair('empresa', sqlDetalhe.FieldByName('CODIGOEMPRESA').asstring);
+                                    objEmpresa.AddPair('estab', sqlDetalhe.FieldByName('codigoestab').asstring);
+                                    objEmpresa.AddPair('nome', sqlDetalhe.FieldByName('nomeestab').asstring);
+
+                                    for J := 0 to sqlDetalhe.RecordCount - 1 do
+                                    begin
+
+                                        if (sqlDetalhe.FieldByName('CFOP_REL').asstring <> sqlDetalhe.FieldByName('CODIGOCFOP').asstring) then
+                                        begin
+                                            pendentes := pendentes + 1;
+                                        end;
+
+                                        if ((sqlDetalhe.FieldByName('CFOP_REL').asstring = sqlDetalhe.FieldByName('CODIGOCFOP').asstring) and
+                                          (sqlDetalhe.FieldByName('CSTIPI').AsInteger <> 49)) then
+                                        begin
+                                            vinculados := vinculados + 1;
+                                        end;
+
+                                        if ((sqlDetalhe.FieldByName('CFOP_REL').asstring = sqlDetalhe.FieldByName('CODIGOCFOP').asstring) and
+                                          (sqlDetalhe.FieldByName('CSTIPI').AsInteger = 49)) then
+                                        begin
+                                            auditados := auditados + 1;
+                                        end;
+
+                                        sqlDetalhe.Next;
+
+                                    end;
+
+                                    objEmpresa.AddPair('pendentes', TJSONNumber.Create(pendentes));
+                                    objEmpresa.AddPair('vinculados', TJSONNumber.Create(vinculados));
+                                    objEmpresa.AddPair('auditados', TJSONNumber.Create(auditados));
+
+                                    AddLog('Objeto Criado: ' + objEmpresa.ToString);
+
+                                    listaTodos.Add(objEmpresa);
+
+                                finally
+                                    // objEmpresa.Free;
+                                end;
+
+                            end;
+
+                            sqlEmpresasAtivas.Next;
+
+                        end;
+
+                    end;
+
+                    resultJson.AddPair('todos', listaTodos);
+                end;
+
+            end;
+
+            Res.Send<TJSONObject>(resultJson);
+
+        end);
+
+    THorse.Post('/auditor_fiscal/cfop_produtos/atualizar',
+        procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+        var
+            LBody: TJSONObject;
+            cfopRef, cstICMS, cstIPI: String;
+            empresa, estab, refNota, codPessoa, codCfopOrigem: String;
+            produtos: TJSONArray;
+            prodAtual: TJSONObject;
+            I: Integer;
+        begin
+
+            AddLog('/auditor_fiscal/cfop_produtos/atualizar');
+
+            LBody := Req.Body<TJSONObject>;
+
+            AddLog('Dados Recebidos: ' + LBody.ToString);
+
+            cfopRef := LBody.GetValue<string>('cfopref');
+            cstICMS := LBody.GetValue<string>('cst_icms');
+            cstIPI := LBody.GetValue<string>('cst_ipi');
+
+            produtos := LBody.GetValue<TJSONArray>('itens') as TJSONArray;
+
+            for I := 0 to produtos.Count - 1 do
+            begin
+
+                prodAtual := produtos.Items[I] as TJSONObject;
+
+                AddLog('Item Recebido: ' + prodAtual.GetValue<string>('descrproduto'));
+
+                empresa := prodAtual.GetValue<string>('codigoempresa');
+                estab := prodAtual.GetValue<string>('codigoestab');
+                refNota := prodAtual.GetValue<string>('refNota');
+                codPessoa := prodAtual.GetValue<string>('codigopessoa');
+                codCfopOrigem := prodAtual.GetValue<string>('codigocfoporigem');
+
+                with Dm_CfopProdutos do
+                begin
+
+                    AddLog('Atualizando Registros ');
+
+                    if cfopRef <> '' then
+                    begin
+
+                        AddLog('Atualizando CFOP para ' + cfopRef);
+
+                        sqlUpdateCFOP.Active := False;
+                        sqlUpdateCFOP.Params.ParamByName('CFOPREF').asstring := cfopRef;
+
+                        sqlUpdateCFOP.Params.ParamByName('EMPRESA').asstring := empresa;
+                        sqlUpdateCFOP.Params.ParamByName('ESTAB').asstring := estab;
+                        sqlUpdateCFOP.Params.ParamByName('REF_NOTA').asstring := refNota;
+                        sqlUpdateCFOP.Params.ParamByName('COD_PESSOA').asstring := codPessoa;
+                        sqlUpdateCFOP.Params.ParamByName('COD_CFOP_ORIGEM').asstring := codCfopOrigem;
+
+                        sqlUpdateCFOP.Prepare;
+                        sqlUpdateCFOP.ExecSQL;
+
+                        AddLog('Atualizou a CFOP para ' + cfopRef);
+
+                    end;
+
+                    if cstICMS <> '' then
+                    begin
+
+                        AddLog('Atualizando CST ICMS para ' + cstICMS);
+
+                        sqlUpdateCstIcms.Active := False;
+                        sqlUpdateCstIcms.Params.ParamByName('CST_ICMS').asstring := cstICMS;
+
+                        sqlUpdateCstIcms.Params.ParamByName('EMPRESA').asstring := empresa;
+                        sqlUpdateCstIcms.Params.ParamByName('ESTAB').asstring := estab;
+                        sqlUpdateCstIcms.Params.ParamByName('REF_NOTA').asstring := refNota;
+                        sqlUpdateCstIcms.Params.ParamByName('COD_PESSOA').asstring := codPessoa;
+                        sqlUpdateCstIcms.Params.ParamByName('COD_CFOP_ORIGEM').asstring := codCfopOrigem;
+
+                        sqlUpdateCstIcms.Prepare;
+                        sqlUpdateCstIcms.ExecSQL;
+
+                        AddLog('Atualizou o CST ICMS para ' + cstICMS);
+
+                    end;
+
+                    if cstIPI <> '' then
+                    begin
+
+                        AddLog('Atualizando CST IPI para ' + cstIPI);
+
+                        sqlUpdateCstIpi.Active := False;
+                        sqlUpdateCstIpi.Params.ParamByName('CST_IPI').asstring := cstIPI;
+
+                        sqlUpdateCstIpi.Params.ParamByName('EMPRESA').asstring := empresa;
+                        sqlUpdateCstIpi.Params.ParamByName('ESTAB').asstring := estab;
+                        sqlUpdateCstIpi.Params.ParamByName('REF_NOTA').asstring := refNota;
+                        sqlUpdateCstIpi.Params.ParamByName('COD_PESSOA').asstring := codPessoa;
+                        sqlUpdateCstIpi.Params.ParamByName('COD_CFOP_ORIGEM').asstring := codCfopOrigem;
+
+                        sqlUpdateCstIpi.Prepare;
+                        sqlUpdateCstIpi.ExecSQL;
+
+                        AddLog('Atualizou o CST IPI para ' + cstIPI);
+
+                    end;
+
+                end;
+
+            end;
+
+            Res.Send('OK');
+
+        end);
+
+    THorse.Post('/auditor_fiscal/diferencial_aliquota/diferenca_valor_contabil',
+        procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+        var
+            LBody, resultJson, objEmpresa: TJSONObject;
+            listaPendencias, listaTodos: TJSONArray;
+            data1, data2, analista, todos: String;
+            pendentes, vinculados, auditados: Integer;
+            I, J, K: Integer;
+        begin
+
+            AddLog('/auditor_fiscal/diferencial_aliquota/diferenca_valor_contabil');
+
+            LBody := Req.Body<TJSONObject>;
+
+            analista := LBody.GetValue<string>('analista');
+            data1 := LBody.GetValue<string>('data1');
+            data2 := LBody.GetValue<string>('data2');
+
+            resultJson := TJSONObject.Create;
+
+            with Dm_Difal do
+            begin
+
+                AddLog('Buscando Empresas do Analista: ' + analista);
+
+                sql_Diferenca_Valor_Contabil_Eu.Active := False;
+                sql_Diferenca_Valor_Contabil_Eu.Params.ParamByName('ANALISTA').AsInteger := StrToInt(analista);
+                sql_Diferenca_Valor_Contabil_Eu.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                sql_Diferenca_Valor_Contabil_Eu.Params.ParamByName('DATA2').AsDate := StrToDate(data1);
+                sql_Diferenca_Valor_Contabil_Eu.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sql_Diferenca_Valor_Contabil_Eu.RecordCount));
+
+                resultJson.AddPair('eu', sql_Diferenca_Valor_Contabil_Eu.toJSONArray());
+
+                AddLog('Buscando Todas as Empresas');
+
+                sql_Diferenca_Valor_Contabil_Todos.Active := False;
+                sql_Diferenca_Valor_Contabil_Todos.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                sql_Diferenca_Valor_Contabil_Todos.Params.ParamByName('DATA2').AsDate := StrToDate(data1);
+                sql_Diferenca_Valor_Contabil_Todos.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sql_Diferenca_Valor_Contabil_Todos.RecordCount));
+
+                resultJson.AddPair('todos', sql_Diferenca_Valor_Contabil_Todos.toJSONArray());
+
+            end;
+
+            Res.Send<TJSONObject>(resultJson);
+
+        end);
+
+    THorse.Post('/auditor_fiscal/diferencial_aliquota/diferenca_valor_contabil/detalhe',
+        procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+        var
+            LBody, resultJson, objEmpresa: TJSONObject;
+            listaPendencias, listaTodos: TJSONArray;
+            data1, data2, empresa, estab: String;
+            pendentes, vinculados, auditados: Integer;
+            I, J, K: Integer;
+        begin
+
+            AddLog('/auditor_fiscal/diferencial_aliquota/diferenca_valor_contabil/detalhe');
+
+            LBody := Req.Body<TJSONObject>;
+
+            empresa := LBody.GetValue<string>('empresa');
+            estab := LBody.GetValue<string>('estab');
+            data1 := LBody.GetValue<string>('data1');
+            data2 := LBody.GetValue<string>('data2');
+
+            resultJson := TJSONObject.Create;
+
+            with Dm_Difal do
+            begin
+
+                AddLog('Buscando Detalhes da Empresa: ' + empresa + ', Estab: ' + estab);
+
+                sql_Diferenca_Valor_Contabil_Detalhe.Active := False;
+                sql_Diferenca_Valor_Contabil_Detalhe.Params.ParamByName('EMPRESA').AsInteger := StrToInt(empresa);
+                sql_Diferenca_Valor_Contabil_Detalhe.Params.ParamByName('ESTAB').AsInteger := StrToInt(estab);
+                sql_Diferenca_Valor_Contabil_Detalhe.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                sql_Diferenca_Valor_Contabil_Detalhe.Params.ParamByName('DATA2').AsDate := StrToDate(data1);
+                sql_Diferenca_Valor_Contabil_Detalhe.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sql_Diferenca_Valor_Contabil_Detalhe.RecordCount));
+
+            end;
+
+            Res.Send<TJSONArray>(Dm_Difal.sql_Diferenca_Valor_Contabil_Detalhe.toJSONArray());
+
+        end);
+
+    THorse.Post('/auditor_fiscal/diferencial_aliquota/revisao/produtos',
+        procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+        var
+            LBody, resultJson, objEmpresa: TJSONObject;
+            listaPendencias, listaTodos: TJSONArray;
+            data1, data2, analista: String;
+            pendentes, vinculados, auditados: Integer;
+            I, J, K: Integer;
+        begin
+
+            AddLog('/auditor_fiscal/diferencial_aliquota/revisao/produtos');
+
+            LBody := Req.Body<TJSONObject>;
+
+            analista := LBody.GetValue<string>('analista');
+            data1 := LBody.GetValue<string>('data1');
+            data2 := LBody.GetValue<string>('data2');
+
+            resultJson := TJSONObject.Create;
+
+            with Dm_Difal do
+            begin
+
+                AddLog('Buscando Pendencias do Analista: ' + analista);
+
+                sql_ProdutosRevisar_Eu.Active := False;
+                sql_ProdutosRevisar_Eu.Params.ParamByName('ANALISTA').AsInteger := StrToInt(analista);
+                sql_ProdutosRevisar_Eu.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                sql_ProdutosRevisar_Eu.Params.ParamByName('DATA2').AsDate := StrToDate(data2);
+                sql_ProdutosRevisar_Eu.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sql_ProdutosRevisar_Eu.RecordCount));
+
+                resultJson.AddPair('eu', sql_ProdutosRevisar_Eu.toJSONArray());
+
+                AddLog('Buscando Pendencias de Todos');
+
+                sql_ProdutosRevisar_Todos.Active := False;
+                sql_ProdutosRevisar_Todos.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                sql_ProdutosRevisar_Todos.Params.ParamByName('DATA2').AsDate := StrToDate(data2);
+                sql_ProdutosRevisar_Todos.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sql_ProdutosRevisar_Todos.RecordCount));
+
+                resultJson.AddPair('todos', sql_ProdutosRevisar_Todos.toJSONArray());
+
+            end;
+
+            Res.Send<TJSONObject>(resultJson);
+
+        end);
+
+    THorse.Post('/auditor_fiscal/diferencial_aliquota/revisao/produtos/atualizar',
+        procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+        var
+            LBody, resultJson, objEmpresa: TJSONObject;
+            listaPendencias, listaTodos: TJSONArray;
+            empresa, produto, aliquota: String;
+            pendentes, vinculados, auditados: Integer;
+            I, J, K: Integer;
+        begin
+
+            AddLog('/auditor_fiscal/diferencial_aliquota/revisao/produtos/atualizar');
+
+            LBody := Req.Body<TJSONObject>;
+
+            empresa := LBody.GetValue<string>('empresa');
+            produto := LBody.GetValue<string>('produto');
+            aliquota := LBody.GetValue<string>('aliquota');
+
+            resultJson := TJSONObject.Create;
+
+            with Dm_Difal do
+            begin
+
+                sql_get_aliquota.Active := False;
+                sql_get_aliquota.Params.ParamByName('EMPRESA').AsInteger := StrToInt(empresa);
+                sql_get_aliquota.Params.ParamByName('PRODUTO').asstring := produto;
+                sql_get_aliquota.Active := True;
+
+                AddLog('Resultado da Busca: ' + IntToStr(sql_get_aliquota.RecordCount));
+
+                if sql_get_aliquota.RecordCount = 0 then
+                begin
+
+                    sql_update_aliquota.Active := False;
+                    sql_update_aliquota.Params.ParamByName('EMPRESA').AsInteger := StrToInt(empresa);
+                    sql_update_aliquota.Params.ParamByName('PRODUTO').asstring := produto;
+                    sql_update_aliquota.Params.ParamByName('ALIQUOTA').asstring := aliquota;
+                    sql_update_aliquota.Prepare;
+                    sql_update_aliquota.ExecSQL;
+
+                    Res.Status(200).Send('INSERT');
+
+                end
+                else
+                begin
+
+                  sql_get_aliquota.Edit;
+                  sql_get_aliquota.FieldByName('ALIQICMS').AsString := aliquota;
+                  sql_get_aliquota.Post;
+
+                  Res.Status(200).Send('UPDATE');
+
+                end;
+
+            end;
+
+        end);
+
+    THorse.Post('/auditor_fiscal/diferencial_aliquota/revisao/fornecedores',
+        procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+        var
+            LBody, resultJson, objEmpresa: TJSONObject;
+            listaPendencias, listaTodos: TJSONArray;
+            data1, data2, analista: String;
+            pendentes, vinculados, auditados: Integer;
+            I, J, K: Integer;
+        begin
+
+            AddLog('/auditor_fiscal/diferencial_aliquota/revisao/fornecedores');
+
+            LBody := Req.Body<TJSONObject>;
+
+            analista := LBody.GetValue<string>('analista');
+            data1 := LBody.GetValue<string>('data1');
+            data2 := LBody.GetValue<string>('data2');
+
+            resultJson := TJSONObject.Create;
+
+            with Dm_Difal do
+            begin
+
+                AddLog('Buscando Pendencias do Analista: ' + analista);
+
+                sql_FornecedoresRevisar_Eu.Active := False;
+                sql_FornecedoresRevisar_Eu.Params.ParamByName('ANALISTA').AsInteger := StrToInt(analista);
+                sql_FornecedoresRevisar_Eu.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                sql_FornecedoresRevisar_Eu.Params.ParamByName('DATA2').AsDate := StrToDate(data2);
+                sql_FornecedoresRevisar_Eu.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sql_FornecedoresRevisar_Eu.RecordCount));
+
+                resultJson.AddPair('eu', sql_FornecedoresRevisar_Eu.toJSONArray());
+
+                AddLog('Buscando Pendencias de Todos');
+
+                sql_FornecedoresRevisar_Todos.Active := False;
+                sql_FornecedoresRevisar_Todos.Params.ParamByName('DATA1').AsDate := StrToDate(data1);
+                sql_FornecedoresRevisar_Todos.Params.ParamByName('DATA2').AsDate := StrToDate(data2);
+                sql_FornecedoresRevisar_Todos.Active := True;
+
+                AddLog('Registros Localizados: ' + IntToStr(sql_FornecedoresRevisar_Todos.RecordCount));
+
+                resultJson.AddPair('todos', sql_FornecedoresRevisar_Todos.toJSONArray());
+
+            end;
+
+            Res.Send<TJSONObject>(resultJson);
+
+        end);
+
+    THorse.Listen(10013);
+    lbStauts.Caption := 'Servidor Ativo';
+    AddLog('Serviço Iniciado Com Sucesso na Porta ' + IntToStr(THorse.Port));
+
+end;
+
+end.
