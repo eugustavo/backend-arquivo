@@ -46,7 +46,7 @@ export async function appRoutes(app: FastifyInstance) {
     diferencaValorContabilRevisaoProdutosAtualizar,
   )
   app.post(
-    '/auditor_fiscal/diferencial_aliquota/revisao/produtos/atualizar',
+    '/auditor_fiscal/diferencial_aliquota/revisao/fornecedores',
     diferencaValorContabilRevisaoFornecedores,
   )
 }
