@@ -16,10 +16,7 @@ import { diferencaValorContabilRevisaoFornecedores } from '../controllers/audito
 export async function appRoutes(app: FastifyInstance) {
   // Notas não lançadas
   app.post('/auditor_fiscal/notas_nao_lancadas', notasNaoLancadas)
-  app.post(
-    '/auditor_fiscal/notas_nao_lancadas/empresas_analista',
-    empresaAnalista,
-  )
+  app.post('/auditor_fiscal/notas_nao_lancadas/empresas_analista', empresaAnalista)
   app.post('/auditor_fiscal/notas_nao_lancadas/informa_motivo', informaMotivo)
 
   // CFOP Produtos
