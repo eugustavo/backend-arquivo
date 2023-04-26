@@ -1,10 +1,10 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
-import { EmpresasAnalista } from '@/database/queries/empresas_analista'
-import { EmpresasAnalistaAll } from '@/database/queries/empresas_analista_all'
+import { query_nfs_analista } from '@/database/queries/notas_nao_lancadas/nfs_analista'
+import { query_nfs_empresas } from '@/database/queries/notas_nao_lancadas/nfs_empresas'
 
-export async function empresaAnalista(
+export async function nfs_indice(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
@@ -17,7 +17,7 @@ export async function empresaAnalista(
   const { data1, data2, analista } = bodySchema.parse(request.body)
 
   reply.send({
-    eu: await EmpresasAnalista(data1, data2, analista),
-    todos: await EmpresasAnalistaAll(data1, data2),
+    eu: await query_nfs_analista(data1, data2, analista),
+    todos: await query_nfs_empresas(data1, data2),
   })
 }
