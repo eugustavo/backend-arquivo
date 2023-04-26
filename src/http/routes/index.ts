@@ -14,6 +14,13 @@ import { diferencaValorContabilRevisaoProdutos } from '../controllers/auditor_fi
 import { diferencaValorContabilRevisaoFornecedores } from '../controllers/auditor_fiscal/diferencial_aliquota/revisao_fornecedores'
 
 export async function appRoutes(app: FastifyInstance) {
+
+  app.get('/', (request, reply) => {
+    reply.send({
+      message: 'HTTP Server is running on version ' + require('../../../package.json').version,
+    })
+  })
+
   // Notas não lançadas
   app.post('/auditor_fiscal/notas_nao_lancadas', nfs_indice)
   app.post('/auditor_fiscal/notas_nao_lancadas/detalhe', nfs_detalhe)
