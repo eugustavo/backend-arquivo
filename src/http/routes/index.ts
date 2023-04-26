@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify'
 
 import { nfs_indice } from '../controllers/auditor_fiscal/notas_nao_lancadas/indice'
 import { nfs_detalhe } from '../controllers/auditor_fiscal/notas_nao_lancadas/detalhe'
-import { informaMotivo } from '../controllers/auditor_fiscal/notas_nao_lancadas/informa_motivo'
+import { nfs_informa_motivo } from '../controllers/auditor_fiscal/notas_nao_lancadas/informa_motivo'
 
 import { cfopProdutos } from '../controllers/auditor_fiscal/cfop_produtos/cfop_produtos'
 import { atualizar } from '../controllers/auditor_fiscal/cfop_produtos/atualizar'
@@ -17,7 +17,7 @@ export async function appRoutes(app: FastifyInstance) {
   // Notas não lançadas
   app.post('/auditor_fiscal/notas_nao_lancadas', nfs_indice)
   app.post('/auditor_fiscal/notas_nao_lancadas/detalhe', nfs_detalhe)
-  app.post('/auditor_fiscal/notas_nao_lancadas/informa_motivo', informaMotivo)
+  app.post('/auditor_fiscal/notas_nao_lancadas/detalhe/informa_motivo', nfs_informa_motivo)
 
   // CFOP Produtos
   app.post('/auditor_fiscal/cfop_produtos', cfopProdutos)

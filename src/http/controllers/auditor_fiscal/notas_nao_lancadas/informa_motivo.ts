@@ -1,7 +1,9 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
-export async function informaMotivo(
+import { query_nfs_motivo } from '@/database/queries/notas_nao_lancadas/nfs_motivo'
+
+export async function nfs_informa_motivo(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
@@ -12,5 +14,11 @@ export async function informaMotivo(
 
   const { chave, motivo } = bodySchema.parse(request.body)
 
-  return reply.status(200).send('OK')
+  await query_nfs_motivo(chave, motivo)
+
+  reply.send({
+    message: 'ok',
+    motivo: motivo,
+    chave: chave,
+  })
 }
