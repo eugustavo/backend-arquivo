@@ -3,7 +3,7 @@ import { options } from '../../../lib/firebird'
 
 export function query_nfs_motivo(chave: any, motivo: any) {
 
-  const sql = `EXECUTE PROCEDURE SIGRA_NFS_UPDATE_MOTIVO(${chave}, ${motivo})`
+  const sql = `EXECUTE PROCEDURE SIGRA_NFS_UPDATE_MOTIVO('${chave}', '${motivo}')`
 
   console.log(sql)
 
