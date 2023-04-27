@@ -8,9 +8,7 @@ export async function sinc_funcionarios(
     reply: FastifyReply,
 ) {
 
-    await query_sinc_funcionarios()
-
     reply.send(
-        query_sinc_funcionarios()
+       await query_sinc_funcionarios()
     )
 }
