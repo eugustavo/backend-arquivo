@@ -13,6 +13,8 @@ import { diferencaValorContabilRevisaoProdutosAtualizar } from '../controllers/a
 import { diferencaValorContabilRevisaoProdutos } from '../controllers/auditor_fiscal/diferencial_aliquota/revisao_produtos'
 import { diferencaValorContabilRevisaoFornecedores } from '../controllers/auditor_fiscal/diferencial_aliquota/revisao_fornecedores'
 
+import { sinc_funcionarios } from '../controllers/sincronizacao/funcionarios'
+
 export async function appRoutes(app: FastifyInstance) {
 
   app.get('/', (request, reply) => {
@@ -50,5 +52,11 @@ export async function appRoutes(app: FastifyInstance) {
   app.post(
     '/auditor_fiscal/diferencial_aliquota/revisao/fornecedores',
     diferencaValorContabilRevisaoFornecedores,
+  )
+
+  // Sincronização Questor
+  app.get(
+    '/sincronizacao/funcionarios',
+    sinc_funcionarios
   )
 }
