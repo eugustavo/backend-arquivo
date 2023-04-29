@@ -5,13 +5,25 @@ import { nfs_detalhe } from '../controllers/auditor_fiscal/notas_nao_lancadas/de
 import { nfs_informa_motivo } from '../controllers/auditor_fiscal/notas_nao_lancadas/informa_motivo'
 
 import { cfopProdutos } from '../controllers/auditor_fiscal/cfop_produtos/cfop_produtos'
-import { atualizar } from '../controllers/auditor_fiscal/cfop_produtos/atualizar'
+import { cfop_update_icms } from '../controllers/auditor_fiscal/cfop_produtos/atualizar_cst_icms'
+import { cfop_update_ipi } from '../controllers/auditor_fiscal/cfop_produtos/atualizar_cst_ipi'
+import { cfop_update_cfop } from '../controllers/auditor_fiscal/cfop_produtos/atualizar_cfop'
 
-import { diferencaValorContabil } from '../controllers/auditor_fiscal/diferencial_aliquota/diferenca_valor_contabil'
-import { diferencaValorContabilDetalhe } from '../controllers/auditor_fiscal/diferencial_aliquota/diferenca_valor_contabil_detalhe'
-import { diferencaValorContabilRevisaoProdutosAtualizar } from '../controllers/auditor_fiscal/diferencial_aliquota/revisao_produtos_atualizar'
-import { diferencaValorContabilRevisaoProdutos } from '../controllers/auditor_fiscal/diferencial_aliquota/revisao_produtos'
-import { diferencaValorContabilRevisaoFornecedores } from '../controllers/auditor_fiscal/diferencial_aliquota/revisao_fornecedores'
+import { difal_dif_valor_detalhe } from '../controllers/auditor_fiscal/difal/dif_vl_contabil_detalhe'
+import { difal_dif_valor_todos } from '../controllers/auditor_fiscal/difal/dif_vl_contabil_todos'
+import { difal_dif_valor_eu } from '../controllers/auditor_fiscal/difal/dif_vl_contabil_eu'
+import { difal_ref_forn_todos } from '../controllers/auditor_fiscal/difal/rev_forn_todos'
+import { difal_ref_forn_eu } from '../controllers/auditor_fiscal/difal/rev_forn_eu'
+import { difal_ref_prod_todos } from '../controllers/auditor_fiscal/difal/rev_prod_todos'
+import { difal_ref_prod_eu } from '../controllers/auditor_fiscal/difal/rev_prod_eu'
+import { difal_get_aliq } from '../controllers/auditor_fiscal/difal/get_aliq'
+import { difal_update_aliq } from '../controllers/auditor_fiscal/difal/atualizar_aliq'
+
+import { listas_empresas_analista } from '../controllers/listas/empresas_analista'
+import { listas_empresas_ativas } from '../controllers/listas/empresas_ativas'
+import { listas_cfop_empresa } from '../controllers/listas/cfop_empresa'
+import { listas_cst_icms } from '../controllers/listas/cst_icms'
+import { listas_cst_ipi } from '../controllers/listas/cst_ipi'
 
 import { sinc_funcionarios } from '../controllers/sincronizacao/funcionarios'
 
@@ -30,33 +42,28 @@ export async function appRoutes(app: FastifyInstance) {
 
   // CFOP Produtos
   app.post('/auditor_fiscal/cfop_produtos', cfopProdutos)
-  app.post('/auditor_fiscal/cfop_produtos/atualizar', atualizar)
+  app.post('/auditor_fiscal/cfop_produtos/atualizar/icms', cfop_update_icms)
+  app.post('/auditor_fiscal/cfop_produtos/atualizar/ipi', cfop_update_ipi)
+  app.post('/auditor_fiscal/cfop_produtos/atualizar/cfop', cfop_update_cfop)
 
   // Diferencial de Aliquota
-  app.post(
-    '/auditor_fiscal/diferencial_aliquota/diferenca_valor_contabil',
-    diferencaValorContabil,
-  )
-  app.post(
-    '/auditor_fiscal/diferencial_aliquota/diferenca_valor_contabil/detalhe',
-    diferencaValorContabilDetalhe,
-  )
-  app.post(
-    '/auditor_fiscal/diferencial_aliquota/revisao/produtos',
-    diferencaValorContabilRevisaoProdutos,
-  )
-  app.post(
-    '/auditor_fiscal/diferencial_aliquota/revisao/produtos/atualizar',
-    diferencaValorContabilRevisaoProdutosAtualizar,
-  )
-  app.post(
-    '/auditor_fiscal/diferencial_aliquota/revisao/fornecedores',
-    diferencaValorContabilRevisaoFornecedores,
-  )
+  app.post('/auditor_fiscal/difal/dif_vl_contabil_detalhe', difal_dif_valor_detalhe)
+  app.post('/auditor_fiscal/difal/dif_vl_contabil_todos', difal_dif_valor_todos)
+  app.post('/auditor_fiscal/difal/dif_vl_contabil_eu', difal_dif_valor_eu)
+  app.post('/auditor_fiscal/difal/ref_forn_todos', difal_ref_forn_todos)
+  app.post('/auditor_fiscal/difal/ref_forn_eu', difal_ref_forn_eu)
+  app.post('/auditor_fiscal/difal/ref_prod_todos', difal_ref_prod_todos)
+  app.post('/auditor_fiscal/difal/ref_prod_eu', difal_ref_prod_eu)
+  app.post('/auditor_fiscal/difal/get_aliq', difal_get_aliq)
+  app.post('/auditor_fiscal/difal/update_aliq', difal_update_aliq)
+
+  // Listas
+  app.post('/listas/empresas_analista', listas_empresas_analista)
+  app.post('/listas/empresas_ativas', listas_empresas_ativas)
+  app.post('/listas/cfop_empresa', listas_cfop_empresa)
+  app.post('/listas/cst_icms', listas_cst_icms)
+  app.post('/listas/cst_ipi', listas_cst_ipi)
 
   // Sincronização Questor
-  app.get(
-    '/sincronizacao/funcionarios',
-    sinc_funcionarios
-  )
+  app.get('/sincronizacao/funcionarios', sinc_funcionarios)
 }

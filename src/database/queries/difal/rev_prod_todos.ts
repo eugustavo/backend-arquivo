@@ -1,9 +1,9 @@
 import firebird from 'node-firebird'
-import { options } from '../../../../src/lib/firebird'
+import { options } from '../../../lib/firebird'
 
-export function CfopProdutosDetalhe(data1: any, data2: any, empresa: any, estab: any) {
+export function Query_Difal_Ref_Prod_Todos(data1: any, data2: any) {
 
-    const sql = `SELECT * FROM SIGRA_CFOP_PRODUTOS_DETALHE (${empresa}, ${estab}, '${data1}', '${data2}')`
+    const sql = `SELECT * FROM SIGRA_DIFAL_PROD_REV_ALL ('${data1}', '${data2}')`
 
     console.log(sql)
 

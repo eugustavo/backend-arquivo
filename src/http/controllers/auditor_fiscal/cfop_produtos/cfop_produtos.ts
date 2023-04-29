@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { CfopProdutosDetalhe } from '@/database/queries/cfop_produtos/detalhe'
+import { CfopProdutosDetalhe } from '@/database/queries/cfop_produtos/cfop_detalhe'
 
 export async function cfopProdutos(
   request: FastifyRequest,

@@ -24,7 +24,6 @@ export function query_nfs_motivo(chave: any, motivo: any) {
           reject(err)
         } else {
           console.log('Chegou no Else do DbQuery')
-          console.log(result)
           resolve(result)
         }
         db.detach()
