@@ -10,8 +10,7 @@ import { cfop_update_ipi } from '../controllers/auditor_fiscal/cfop_produtos/atu
 import { cfop_update_cfop } from '../controllers/auditor_fiscal/cfop_produtos/atualizar_cfop'
 
 import { difal_dif_valor_detalhe } from '../controllers/auditor_fiscal/difal/dif_vl_contabil_detalhe'
-import { difal_dif_valor_todos } from '../controllers/auditor_fiscal/difal/dif_vl_contabil_todos'
-import { difal_dif_valor_eu } from '../controllers/auditor_fiscal/difal/dif_vl_contabil_eu'
+import { difal_dif_valor } from '../controllers/auditor_fiscal/difal/dif_vl_contabil'
 import { difal_ref_forn_todos } from '../controllers/auditor_fiscal/difal/rev_forn_todos'
 import { difal_ref_forn_eu } from '../controllers/auditor_fiscal/difal/rev_forn_eu'
 import { difal_ref_prod_todos } from '../controllers/auditor_fiscal/difal/rev_prod_todos'
@@ -47,9 +46,8 @@ export async function appRoutes(app: FastifyInstance) {
   app.post('/auditor_fiscal/cfop_produtos/atualizar/cfop', cfop_update_cfop)
 
   // Diferencial de Aliquota
+  app.post('/auditor_fiscal/difal/dif_vl_contabil', difal_dif_valor)
   app.post('/auditor_fiscal/difal/dif_vl_contabil_detalhe', difal_dif_valor_detalhe)
-  app.post('/auditor_fiscal/difal/dif_vl_contabil_todos', difal_dif_valor_todos)
-  app.post('/auditor_fiscal/difal/dif_vl_contabil_eu', difal_dif_valor_eu)
   app.post('/auditor_fiscal/difal/ref_forn_todos', difal_ref_forn_todos)
   app.post('/auditor_fiscal/difal/ref_forn_eu', difal_ref_forn_eu)
   app.post('/auditor_fiscal/difal/ref_prod_todos', difal_ref_prod_todos)
