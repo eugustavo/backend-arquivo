@@ -3,7 +3,7 @@ import { options } from '../../../lib/firebird'
 
 export function Query_Difal_Dif_Valor_Contabil_Detalhe(data1: any, data2: any, empresa: any, estab: any) {
 
-    const sql = `SELECT * FROM SIGRA_DIFAL_DIF_VLCON_DET (${empresa}, ${estab}, '${data1}', '${data2}')`
+    const sql = `SELECT * FROM SIGRA_DIFAL_DIF_VLCON_DET ('${empresa}', '${estab}', '${data1}', '${data2}')`
 
     console.log(sql)
 
