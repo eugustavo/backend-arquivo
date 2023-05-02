@@ -14,9 +14,14 @@ export async function difal_dif_valor_detalhe(
         estab: z.any(),
     })
 
+    function converteData(dataInformada: string): string {
+        let data = dataInformada.split('/')
+        return data[2] + '-' + data[1] + '-' + data[0]
+    }
+
     const { data1, data2, empresa, estab } = bodySchema.parse(request.body)
 
     return reply.status(200).send(
-        await Query_Difal_Dif_Valor_Contabil_Detalhe(data1, data2, empresa, estab)
+        await Query_Difal_Dif_Valor_Contabil_Detalhe(converteData(data1), converteData(data2), empresa, estab)
     )
 }
