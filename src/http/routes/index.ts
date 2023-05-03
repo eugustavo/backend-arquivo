@@ -4,7 +4,8 @@ import { nfs_indice } from '../controllers/auditor_fiscal/notas_nao_lancadas/ind
 import { nfs_detalhe } from '../controllers/auditor_fiscal/notas_nao_lancadas/detalhe'
 import { nfs_informa_motivo } from '../controllers/auditor_fiscal/notas_nao_lancadas/informa_motivo'
 
-import { cfopProdutos } from '../controllers/auditor_fiscal/cfop_produtos/cfop_produtos'
+import { cfopProdutos } from '../controllers/auditor_fiscal/cfop_produtos/cfop_detalhe'
+import { cfopResumo } from '../controllers/auditor_fiscal/cfop_produtos/cfop_resumo'
 import { cfop_update_icms } from '../controllers/auditor_fiscal/cfop_produtos/atualizar_cst_icms'
 import { cfop_update_ipi } from '../controllers/auditor_fiscal/cfop_produtos/atualizar_cst_ipi'
 import { cfop_update_cfop } from '../controllers/auditor_fiscal/cfop_produtos/atualizar_cfop'
@@ -42,7 +43,8 @@ export async function appRoutes(app: FastifyInstance) {
   app.post('/auditor_fiscal/notas_nao_lancadas/detalhe/informa_motivo', nfs_informa_motivo)
 
   // CFOP Produtos
-  app.post('/auditor_fiscal/cfop_produtos', cfopProdutos)
+  app.post('/auditor_fiscal/cfop_produtos', cfopResumo)
+  app.post('/auditor_fiscal/cfop_produtos/detalhe', cfopProdutos)
   app.post('/auditor_fiscal/cfop_produtos/atualizar/icms', cfop_update_icms)
   app.post('/auditor_fiscal/cfop_produtos/atualizar/ipi', cfop_update_ipi)
   app.post('/auditor_fiscal/cfop_produtos/atualizar/cfop', cfop_update_cfop)
