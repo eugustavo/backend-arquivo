@@ -24,11 +24,15 @@ import { listas_cst_ipi } from '../controllers/listas/cst_ipi'
 
 import { sinc_funcionarios } from '../controllers/sincronizacao/funcionarios'
 
+
+var os = require("os");
+var hostname = os.hostname();
+
 export async function appRoutes(app: FastifyInstance) {
 
   app.get('/', (request, reply) => {
     reply.send({
-      message: 'HTTP Server is running on version ' + require('../../../package.json').version,
+      message: 'HTTP Server is running on version ' + require('../../../package.json').version + ' at ' + hostname,
     })
   })
 

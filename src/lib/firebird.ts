@@ -1,4 +1,9 @@
-const dev = true
+var os = require("os");
+var hostname = os.hostname();
+
+console.log(hostname)
+
+const dev = false
 
 export const options = {
   host: dev ? '192.168.15.175' : '192.168.16.158',
