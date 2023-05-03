@@ -4,7 +4,9 @@ import { ZodError } from 'zod'
 import { env } from './env'
 import { appRoutes } from './http/routes'
 
-export const app = fastify()
+export const app = fastify({
+  keepAliveTimeout: 5 * 60 * 1000 // 5 minutes,
+})
 
 app.register(cors, {
   origin: '*',
