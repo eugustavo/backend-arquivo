@@ -55,6 +55,7 @@ export async function appRoutes(app: FastifyInstance) {
   app.post('/auditor_fiscal/difal/get_aliq', difal_get_aliq)
   app.post('/auditor_fiscal/difal/update_aliq', difal_update_aliq)
   app.post('/auditor_fiscal/difal/difa_antecipacao', difal_difa_antecipacao)
+  app.post('/auditor_fiscal/difal/difa_antecipacao/inserir', difal_difa_antecipacao)
 
 
   // Listas
