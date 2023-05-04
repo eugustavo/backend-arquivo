@@ -24,6 +24,7 @@ import { listas_cst_icms } from '../controllers/listas/cst_icms'
 import { listas_cst_ipi } from '../controllers/listas/cst_ipi'
 
 import { sinc_funcionarios } from '../controllers/sincronizacao/funcionarios'
+import { sinc_operadores } from '../controllers/sincronizacao/operadores'
 
 
 var os = require("os");
@@ -65,4 +66,5 @@ export async function appRoutes(app: FastifyInstance) {
 
   // Sincronização Questor
   app.get('/sincronizacao/funcionarios', sinc_funcionarios)
+  app.get('/sincronizacao/operadores', sinc_operadores)
 }
