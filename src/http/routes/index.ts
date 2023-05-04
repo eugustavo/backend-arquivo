@@ -45,9 +45,7 @@ export async function appRoutes(app: FastifyInstance) {
   // CFOP Produtos
   app.post('/auditor_fiscal/cfop_produtos', cfopResumo)
   app.post('/auditor_fiscal/cfop_produtos/detalhe', cfopProdutos)
-  app.post('/auditor_fiscal/cfop_produtos/atualizar/icms', cfop_update_icms)
-  app.post('/auditor_fiscal/cfop_produtos/atualizar/ipi', cfop_update_ipi)
-  app.post('/auditor_fiscal/cfop_produtos/atualizar/cfop', cfop_update_cfop)
+  app.post('/auditor_fiscal/cfop_produtos/atualizar', cfop_update_cfop)
 
   // Diferencial de Aliquota
   app.post('/auditor_fiscal/difal/dif_vl_contabil', difal_dif_valor)
