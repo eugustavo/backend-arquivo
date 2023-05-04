@@ -10,17 +10,17 @@ export async function difal_update_aliq(
     const bodySchema = z.object({
         empresa: z.any(),
         produto: z.any(),
-        aliq: z.any()
+        aliquota: z.any()
     })
 
-    const { empresa, produto, aliq } = bodySchema.parse(request.body)
+    const { empresa, produto, aliquota } = bodySchema.parse(request.body)
 
-    await Dif_Update_Aliq(empresa, produto, aliq)
+    await Dif_Update_Aliq(empresa, produto, aliquota)
 
     reply.send({
         message: 'ok',
         empresa: empresa,
         produto: produto,
-        aliq: aliq
+        aliquota: aliquota
     })
 }
