@@ -6,8 +6,6 @@ import { nfs_informa_motivo } from '../controllers/auditor_fiscal/notas_nao_lanc
 
 import { cfopProdutos } from '../controllers/auditor_fiscal/cfop_produtos/cfop_detalhe'
 import { cfopResumo } from '../controllers/auditor_fiscal/cfop_produtos/cfop_resumo'
-import { cfop_update_icms } from '../controllers/auditor_fiscal/cfop_produtos/atualizar_cst_icms'
-import { cfop_update_ipi } from '../controllers/auditor_fiscal/cfop_produtos/atualizar_cst_ipi'
 import { cfop_update_cfop } from '../controllers/auditor_fiscal/cfop_produtos/atualizar_cfop'
 
 import { difal_dif_valor_detalhe } from '../controllers/auditor_fiscal/difal/dif_vl_contabil_detalhe'
@@ -16,6 +14,7 @@ import { difal_ref_prod } from '../controllers/auditor_fiscal/difal/rev_prod'
 import { difal_ref_forn } from '../controllers/auditor_fiscal/difal/rev_forn'
 import { difal_get_aliq } from '../controllers/auditor_fiscal/difal/get_aliq'
 import { difal_update_aliq } from '../controllers/auditor_fiscal/difal/atualizar_aliq'
+import { difal_difa_antecipacao } from '../controllers/auditor_fiscal/difal/difa_antecipacao'
 
 import { listas_empresas_analista } from '../controllers/listas/empresas_analista'
 import { listas_empresas_ativas } from '../controllers/listas/empresas_ativas'
@@ -53,9 +52,10 @@ export async function appRoutes(app: FastifyInstance) {
   app.post('/auditor_fiscal/difal/dif_vl_contabil_detalhe', difal_dif_valor_detalhe)
   app.post('/auditor_fiscal/difal/ref_prod', difal_ref_prod)
   app.post('/auditor_fiscal/difal/ref_forn', difal_ref_forn)
-
   app.post('/auditor_fiscal/difal/get_aliq', difal_get_aliq)
   app.post('/auditor_fiscal/difal/update_aliq', difal_update_aliq)
+  app.post('/auditor_fiscal/difal/difa_antecipacao', difal_difa_antecipacao)
+
 
   // Listas
   app.post('/listas/empresas_analista', listas_empresas_analista)
