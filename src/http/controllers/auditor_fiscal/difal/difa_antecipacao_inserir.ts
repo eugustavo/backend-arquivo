@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import { Dif_Difa_Inserir } from '@/database/queries/difal/difa_antecipacao_inserir'
 
-export async function difal_update_aliq(
+export async function difal_difa_inserir(
     request: FastifyRequest,
     reply: FastifyReply,
 ) {
