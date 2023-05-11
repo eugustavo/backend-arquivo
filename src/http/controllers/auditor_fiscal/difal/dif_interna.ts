@@ -47,41 +47,14 @@ export async function DifaInternaResumo(
 
         for (let i = 0; i < empresasAtivas.length; i++) {
 
-            let dados: any = await Query_Difal_Dif_Interna_Det(converteData(data1), converteData(data2), empresasAtivas[i].CODIGOEMPRESA, empresasAtivas[i].CODIGOESTAB)
+            let dados: any = await Query_Difal_Dif_Interna_Det(converteData(data1), converteData(data2), empresasAnalista[i].CODIGOEMPRESA, empresasAnalista[i].CODIGOESTAB)
 
-            let pendentes = 0
-            let vinculados = 0
-            let auditados = 0
+            console.log(dados)
 
-            if (dados[i]) {
-
-                let obj = {
-                    CODIGOEMPRESA: dados[i]?.CODIGOEMPRESA,
-                    CODIGOESTAB: dados[i]?.CODIGOESTAB,
-                    NOMEESTAB: dados[i]?.NOMEESTAB,
-                }
-                dados.forEach((item: any) => {
-                    if (item.CFOP_REL !== item.CODIGOCFOP) {
-                        pendentes = pendentes + 1
-                        console.log('Chegou no Pendentes: ', pendentes)
-                    }
-                    if (item.CFOP_REL == item.CODIGOCFOP && item.CSTIPI !== '49') {
-                        vinculados = vinculados + 1
-                        console.log('Chegou no Vinculados: ', vinculados)
-                    }
-                    if (item.CFOP_REL == item.CODIGOCFOP && item.CSTIPI == '49') {
-                        auditados = auditados + 1
-                        console.log('Chegou no Auditados: ', auditados)
-                    }
-                })
-
-                listaTodos.push({
-                    ...obj,
-                    pendentes,
-                    vinculados,
-                    auditados
-                })
+            if (dados.length > 0) {
+                listaTodos.push(dados)
             }
+
 
         }
     }
