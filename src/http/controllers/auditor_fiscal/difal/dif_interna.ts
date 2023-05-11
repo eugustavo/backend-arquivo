@@ -32,7 +32,7 @@ export async function DifaInternaResumo(
 
         console.log(dados)
 
-        if (dados) {
+        if (dados.length > 0) {
             listaAnalista.push({
                 ...dados
             })
