@@ -16,6 +16,7 @@ import { difal_get_aliq } from '../controllers/auditor_fiscal/difal/get_aliq'
 import { difal_update_aliq } from '../controllers/auditor_fiscal/difal/atualizar_aliq'
 import { difal_difa_antecipacao } from '../controllers/auditor_fiscal/difal/difa_antecipacao'
 import { difal_difa_inserir } from '../controllers/auditor_fiscal/difal/difa_antecipacao_inserir'
+import { DifaInternaResumo } from '../controllers/auditor_fiscal/difal/dif_interna'
 
 import { listas_empresas_analista } from '../controllers/listas/empresas_analista'
 import { listas_empresas_ativas } from '../controllers/listas/empresas_ativas'
@@ -57,7 +58,7 @@ export async function appRoutes(app: FastifyInstance) {
   app.post('/auditor_fiscal/difal/update_aliq', difal_update_aliq)
   app.post('/auditor_fiscal/difal/difa_antecipacao', difal_difa_antecipacao)
   app.post('/auditor_fiscal/difal/difa_antecipacao/inserir', difal_difa_inserir)
-
+  app.post('/auditor_fiscal/difal/difa_interna', DifaInternaResumo)
 
   // Listas
   app.post('/listas/empresas_analista', listas_empresas_analista)
