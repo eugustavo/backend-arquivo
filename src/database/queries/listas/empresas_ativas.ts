@@ -3,7 +3,7 @@ import { options } from '../../../lib/firebird'
 
 export function Query_Listas_Empresas_Ativas() {
 
-    const sql = `SELECT * FROM ESTAB WHERE DATAENCERATIV = '2100-12-31 ORDER BY CODIGOEMPRESA'`
+    const sql = `SELECT * FROM ESTAB WHERE DATAENCERATIV = '2100-12-31' ORDER BY CODIGOEMPRESA`
 
     console.log(sql)
 
