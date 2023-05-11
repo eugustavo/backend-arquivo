@@ -32,9 +32,13 @@ export async function DifaInternaResumo(
 
         console.log(dados)
 
-        listaAnalista.push({
-            ...dados
-        })
+        if (dados) {
+            listaAnalista.push({
+                ...dados
+            })
+        }
+
+
     }
 
     let listaTodos: any[] = []
