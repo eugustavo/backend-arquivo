@@ -46,6 +46,7 @@ export async function DifaInternaResumo(
         const empresasAtivas: any = await Query_Listas_Empresas_Ativas()
 
         for (let i = 0; i < empresasAtivas.length; i++) {
+            
 
             let dados: any = await Query_Difal_Dif_Interna_Det(converteData(data1), converteData(data2), empresasAnalista[i].CODIGOEMPRESA, empresasAnalista[i].CODIGOESTAB)
 
