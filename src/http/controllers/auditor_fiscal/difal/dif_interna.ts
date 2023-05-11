@@ -30,7 +30,11 @@ export async function DifaInternaResumo(
 
         let dados: any = await Query_Difal_Dif_Interna_Det(converteData(data1), converteData(data2), empresasAnalista[i].CODIGOEMPRESA, empresasAnalista[i].CODIGOESTAB)
 
-        listaAnalista.push(dados[i])
+        console.log(dados[i])
+
+        listaAnalista.push({
+            ...dados[i]
+        })
     }
 
     let listaTodos: any[] = []
