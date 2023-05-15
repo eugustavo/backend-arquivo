@@ -33,9 +33,7 @@ export async function DifaInternaResumo(
         console.log(dados)
 
         if (dados.length > 0) {
-            listaAnalista.push({
-                ...dados
-            })
+            listaAnalista.push(...dados)
         }
 
 
@@ -55,9 +53,7 @@ export async function DifaInternaResumo(
             console.log(dados)
 
             if (dados.length > 0) {
-                listaTodos.push({
-                    ...dados
-                })
+                listaTodos.push(...dados)
             }
 
 
