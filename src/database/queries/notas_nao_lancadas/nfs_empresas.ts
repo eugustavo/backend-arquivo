@@ -19,18 +19,22 @@ export function query_nfs_empresas(data1: any, data2: any) {
         console.log('Chegou no Erro do Attach')
         console.error('Erro na Conexão: ', err)
         reject(err)
+        return
       }
       console.log('Chegou antes do DbQuery')
       db.query(sql, function (err: any, result: any): any {
         console.log('Chegou no DbQuery')
+        db.detach()
         if (err) {
           console.error('Erro na Query: ', err)
           reject(err)
+          return
         } else {
           console.log('Chegou no Else do DbQuery')
           console.log(result.length)
           resolve(result)
         }
+      }).finally(() => {
         db.detach()
       })
     })
