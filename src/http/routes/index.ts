@@ -18,6 +18,8 @@ import { difal_difa_antecipacao } from '../controllers/auditor_fiscal/difal/difa
 import { difal_difa_inserir } from '../controllers/auditor_fiscal/difal/difa_antecipacao_inserir'
 import { DifaInternaResumo } from '../controllers/auditor_fiscal/difal/dif_interna'
 
+import { cmi_simples_nacional_empresas } from '../controllers/cmi/simples_nacional/empresas'
+
 import { listas_empresas_analista } from '../controllers/listas/empresas_analista'
 import { listas_empresas_ativas } from '../controllers/listas/empresas_ativas'
 import { listas_cfop_empresa } from '../controllers/listas/cfop_empresa'
@@ -59,6 +61,9 @@ export async function appRoutes(app: FastifyInstance) {
   app.post('/auditor_fiscal/difal/difa_antecipacao', difal_difa_antecipacao)
   app.post('/auditor_fiscal/difal/difa_antecipacao/inserir', difal_difa_inserir)
   app.post('/auditor_fiscal/difal/difa_interna', DifaInternaResumo)
+
+  // Controles Mensais de Impostos - Simples Nacional
+  app.post('/auditor_fiscal/cmi/simples_nacional/empresas', cmi_simples_nacional_empresas)
 
   // Listas
   app.post('/listas/empresas_analista', listas_empresas_analista)
