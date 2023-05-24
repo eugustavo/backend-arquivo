@@ -30,6 +30,8 @@ import { sinc_funcionarios } from '../controllers/sincronizacao/funcionarios'
 import { sinc_operadores } from '../controllers/sincronizacao/operadores'
 import { sinc_contas_ctb_bancos } from '../controllers/sincronizacao/contas_ctb_bancos'
 
+import { extrato_insert } from '../controllers/lancamentos_bancarios/integrar_extrato'
+
 
 var os = require("os");
 var hostname = os.hostname();
@@ -65,6 +67,9 @@ export async function appRoutes(app: FastifyInstance) {
 
   // Controles Mensais de Impostos - Simples Nacional
   app.post('/auditor_fiscal/cmi/simples_nacional/empresas', cmi_simples_nacional_empresas)
+
+  // Extrato Bancário
+  app.post('/questor/bancos/extrato/incluir', extrato_insert)
 
   // Listas
   app.post('/listas/empresas_analista', listas_empresas_analista)
