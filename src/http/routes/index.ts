@@ -28,6 +28,7 @@ import { listas_cst_ipi } from '../controllers/listas/cst_ipi'
 
 import { sinc_funcionarios } from '../controllers/sincronizacao/funcionarios'
 import { sinc_operadores } from '../controllers/sincronizacao/operadores'
+import { sinc_contas_ctb_bancos } from '../controllers/sincronizacao/contas_ctb_bancos'
 
 
 var os = require("os");
@@ -75,4 +76,5 @@ export async function appRoutes(app: FastifyInstance) {
   // Sincronização Questor
   app.get('/sincronizacao/funcionarios', sinc_funcionarios)
   app.get('/sincronizacao/operadores', sinc_operadores)
+  app.get('/sincronizacao/contas_ctb_bancos', sinc_contas_ctb_bancos)
 }
