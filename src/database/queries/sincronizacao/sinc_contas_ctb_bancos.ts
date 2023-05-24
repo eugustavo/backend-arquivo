@@ -8,7 +8,7 @@ export function query_sinc_contas_ctb_bancos() {
   CODIGOEMPRESA,
   CODIGOESTAB,
   CONTACTB,
-  cast(DESCRCONTA as varchar(120) character set win1252) as DESCRCONTA
+  trim(cast(DESCRCONTA as varchar(120) character set win1252)) as DESCRCONTA
   FROM
   SIGRA_BANCOS_LISTARCONTAS`
 
