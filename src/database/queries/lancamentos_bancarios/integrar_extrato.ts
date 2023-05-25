@@ -115,7 +115,7 @@ export function query_seq_agencia() {
           reject(err)
         } else {
           console.log('Chegou no Else do DbQuery')
-          resolve(result)
+          resolve(result[0].SEQ)
         }
         db.detach()
       })
@@ -145,7 +145,7 @@ export function query_seq_conta() {
           reject(err)
         } else {
           console.log('Chegou no Else do DbQuery')
-          resolve(result)
+          resolve(result[0].SEQ)
         }
         db.detach()
       })

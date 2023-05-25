@@ -50,14 +50,14 @@ export async function extrato_insert(
 
             const getSeq: any = await query_seq_agencia()
 
-            await query_cadastra_agencia(dados_conta_banco, dados_conta_agencia, dados_conta_agencia_digito, getSeq[0].seq)
+            await query_cadastra_agencia(dados_conta_banco, dados_conta_agencia, dados_conta_agencia_digito, getSeq)
 
             const existeAgencia: any = await query_existe_agencia(dados_conta_agencia, dados_conta_banco, dados_conta_agencia_digito)
 
             if (existeAgencia.rowCount > 0) {
                 const getSeq: any = await query_seq_conta()
 
-                await query_cadastra_conta(getSeq[0].seq, dados_conta_banco, existeAgencia.rows[0].numeroagencia, dados_conta_conta, dados_conta_conta_digito)
+                await query_cadastra_conta(getSeq, dados_conta_banco, existeAgencia.rows[0].numeroagencia, dados_conta_conta, dados_conta_conta_digito)
 
                 await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
             }
@@ -66,7 +66,7 @@ export async function extrato_insert(
 
             const getSeq: any = await query_seq_conta()
 
-            await query_cadastra_conta(getSeq[0].seq, dados_conta_banco, existeAgencia.rows[0].numeroagencia, dados_conta_conta, dados_conta_conta_digito)
+            await query_cadastra_conta(getSeq, dados_conta_banco, existeAgencia.rows[0].numeroagencia, dados_conta_conta, dados_conta_conta_digito)
 
             await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
 
