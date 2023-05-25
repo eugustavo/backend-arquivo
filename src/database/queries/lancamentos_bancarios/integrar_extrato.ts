@@ -64,7 +64,7 @@ export function query_existe_conta_cadastrada(agencia: any, conta: any, digito: 
 }
 export function query_get_conta_cadastrada(agencia: any, conta: any, digito: any, banco: any) {
 
-  const sql = `select COODIGOCONTABANCARIA from CONTABANCARIA A WHERE A.CODIGOBANCO = '${banco}' AND A.NUMEROAGENCIA = '${agencia}' AND A.NUMEROCONTA = '${conta}' AND A.DIGITOCONTA = '${digito}'`
+  const sql = `select CODIGOCONTABANCARIA from CONTABANCARIA A WHERE A.CODIGOBANCO = '${banco}' AND A.NUMEROAGENCIA = '${agencia}' AND A.NUMEROCONTA = '${conta}' AND A.DIGITOCONTA = '${digito}'`
 
   console.log(sql)
 
@@ -85,7 +85,7 @@ export function query_get_conta_cadastrada(agencia: any, conta: any, digito: any
           reject(err)
         } else {
           console.log('Chegou no Else do DbQuery')
-          resolve(result[0].COODIGOCONTABANCARIA)
+          resolve(result[0].CODIGOCONTABANCARIA)
         }
         db.detach()
       })
