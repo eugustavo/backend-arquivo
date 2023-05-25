@@ -31,7 +31,7 @@ export function query_extrato_ja_existe(empresa: any, estab: any, conta_ctb: any
 
   console.log('Função Acionada: query_extrato_insert')
 
-  const sql = `SELECT COUNT(*) AS QTDE FROM CONCBANCLCTO WHERE CODIGOEMPRESA = '${empresa}' AND CODIGOESTAB =  '${estab}' AND CONTACTB = '${conta_ctb}' AND DATALCTOBANC = '${data}' AND SEQLCTOBANC = '${seq}')`
+  const sql = `SELECT COUNT(*) AS QTDE FROM CONCBANCLCTO WHERE CODIGOEMPRESA = '${empresa}' AND CODIGOESTAB =  '${estab}' AND CONTACTB = '${conta_ctb}' AND DATALCTOBANC = '${data}' AND SEQLCTOBANC = '${seq}'`
 
   console.log(sql)
 
