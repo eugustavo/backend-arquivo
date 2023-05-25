@@ -27,6 +27,32 @@ export function query_extrato_insert(empresa: any, estab: any, conta_ctb: any, d
     })
   })
 }
+export function query_extrato_ja_existe(empresa: any, estab: any, conta_ctb: any, data: any, seq: any) {
+
+  console.log('Função Acionada: query_extrato_insert')
+
+  const sql = `SELECT COUNT(*) AS QTDE FROM CONCBANCLCTO WHERE CODIGOEMPRESA = '${empresa}' AND CODIGOESTAB =  '${estab}' AND CONTACTB = '${conta_ctb}' AND DATALCTOBANC = '${data}' AND SEQLCTOBANC = '${seq}')`
+
+  console.log(sql)
+
+  return new Promise((resolve, reject) => {
+    firebird.attach(options, function (err: any, db: any): any {
+      if (err) {
+        console.error('Erro na Conexão: ', err)
+        reject(err)
+      }
+      db.query(sql, function (err: any, result: any): any {
+        if (err) {
+          console.error('Erro na Query: ', err)
+          reject(err)
+        } else {
+          resolve(result[0].QTDE)
+        }
+        db.detach()
+      })
+    })
+  })
+}
 
 export function query_existe_conta_cadastrada(agencia: any, conta: any, digito: any, banco: any) {
 

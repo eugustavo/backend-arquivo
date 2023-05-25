@@ -13,7 +13,8 @@ import {
     query_get_agencia,
     query_vincula_empresa,
     query_get_conta_cadastrada,
-    query_vincula_ctb
+    query_vincula_ctb,
+    query_extrato_ja_existe
 
 } from '@/database/queries/lancamentos_bancarios/integrar_extrato'
 
@@ -44,7 +45,11 @@ export async function extrato_insert(
 
     if (existeConta > 0) {
 
-        await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
+        const jaExisteExtrato = await query_extrato_ja_existe(empresa, estab, conta_ctb, data, seq)
+        if (jaExisteExtrato == 0) {
+            await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
+        }
+
 
     } else {
 
@@ -73,7 +78,10 @@ export async function extrato_insert(
                 await query_vincula_empresa(getSeqVincEmpresa, codigoConta, empresa)
                 await query_vincula_ctb(codigoConta, conta_ctb, empresa, estab)
 
-                await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
+                const jaExisteExtrato = await query_extrato_ja_existe(empresa, estab, conta_ctb, data, seq)
+                if (jaExisteExtrato == 0) {
+                    await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
+                }
             }
 
         } else {
@@ -90,7 +98,10 @@ export async function extrato_insert(
             await query_vincula_empresa(getSeqVincEmpresa, codigoConta, empresa)
             await query_vincula_ctb(codigoConta, conta_ctb, empresa, estab)
 
-            await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
+            const jaExisteExtrato = await query_extrato_ja_existe(empresa, estab, conta_ctb, data, seq)
+            if (jaExisteExtrato == 0) {
+                await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
+            }
 
         }
 
