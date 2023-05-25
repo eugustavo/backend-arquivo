@@ -31,6 +31,7 @@ import { sinc_operadores } from '../controllers/sincronizacao/operadores'
 import { sinc_contas_ctb_bancos } from '../controllers/sincronizacao/contas_ctb_bancos'
 
 import { extrato_insert } from '../controllers/lancamentos_bancarios/integrar_extrato'
+import { sinc_empresas } from '../controllers/sincronizacao/empresas'
 
 
 var os = require("os");
@@ -81,5 +82,6 @@ export async function appRoutes(app: FastifyInstance) {
   // Sincronização Questor
   app.get('/sincronizacao/funcionarios', sinc_funcionarios)
   app.get('/sincronizacao/operadores', sinc_operadores)
+  app.get('/sincronizacao/empresas', sinc_empresas)
   app.get('/sincronizacao/contas_ctb_bancos', sinc_contas_ctb_bancos)
 }
