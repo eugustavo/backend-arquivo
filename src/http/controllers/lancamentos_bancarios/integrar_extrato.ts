@@ -31,7 +31,6 @@ export async function extrato_insert(
         dados_conta_conta: z.any(),
         dados_conta_conta_digito: z.any(),
         dados_conta_banco: z.any(),
-
     })
 
     const { empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao, dados_conta_agencia, dados_conta_agencia_digito, dados_conta_conta, dados_conta_conta_digito, dados_conta_banco } = bodySchema.parse(request.body)
@@ -55,7 +54,9 @@ export async function extrato_insert(
             const existeAgencia: any = await query_existe_agencia(dados_conta_agencia, dados_conta_banco, dados_conta_agencia_digito)
 
             if (existeAgencia.rowCount > 0) {
+                
                 const getSeq: any = await query_seq_conta()
+                console.log('getSeqContaObtido:' + getSeq)
 
                 await query_cadastra_conta(getSeq, dados_conta_banco, existeAgencia.rows[0].numeroagencia, dados_conta_conta, dados_conta_conta_digito)
 
