@@ -11,7 +11,8 @@ import {
     query_seq_vinc_empresa,
     query_cadastra_agencia,
     query_get_agencia,
-    query_vincula_empresa
+    query_vincula_empresa,
+    query_get_conta_cadastrada
 
 } from '@/database/queries/lancamentos_bancarios/integrar_extrato'
 
@@ -76,8 +77,10 @@ export async function extrato_insert(
             const getSeqConta: any = await query_seq_conta()
             const getSeqVincEmpresa: any = await query_seq_vinc_empresa(empresa)
 
+            const codigoConta: any = await query_get_conta_cadastrada(dados_conta_agencia, dados_conta_conta, dados_conta_conta_digito, dados_conta_banco)
+
             await query_cadastra_conta(getSeqConta, dados_conta_banco, codAgencia, dados_conta_conta, dados_conta_conta_digito)
-            await query_vincula_empresa(getSeqVincEmpresa, dados_conta_banco, empresa)
+            await query_vincula_empresa(getSeqVincEmpresa, codigoConta, empresa)
 
 
             // await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)

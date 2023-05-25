@@ -62,6 +62,36 @@ export function query_existe_conta_cadastrada(agencia: any, conta: any, digito: 
     })
   })
 }
+export function query_get_conta_cadastrada(agencia: any, conta: any, digito: any, banco: any) {
+
+  const sql = `select COODIGOCONTABANCARIA from CONTABANCARIA A WHERE A.CODIGOBANCO = '${banco}' AND A.NUMEROAGENCIA = '${agencia}' AND A.NUMEROCONTA = '${conta}' AND A.DIGITOCONTA = '${digito}'`
+
+  console.log(sql)
+
+  return new Promise((resolve, reject) => {
+    console.log('Chegou na Promise')
+    firebird.attach(options, function (err: any, db: any): any {
+      console.log('Chegou no Attach')
+      if (err) {
+        console.log('Chegou no Erro do Attach')
+        console.error('Erro na Conexão: ', err)
+        reject(err)
+      }
+      console.log('Chegou antes do DbQuery')
+      db.query(sql, function (err: any, result: any): any {
+        console.log('Chegou no DbQuery')
+        if (err) {
+          console.error('Erro na Query: ', err)
+          reject(err)
+        } else {
+          console.log('Chegou no Else do DbQuery')
+          resolve(result[0].COODIGOCONTABANCARIA)
+        }
+        db.detach()
+      })
+    })
+  })
+}
 export function query_existe_agencia(agencia: any, banco: any) {
 
   const sql = `select count(*) as QTDE from AGENCIA A WHERE A.CODIGOBANCO = '${banco}' AND A.NUMEROAGENCIA = '${agencia}' `
