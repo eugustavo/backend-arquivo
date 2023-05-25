@@ -85,6 +85,7 @@ export function query_existe_agencia(agencia: any, banco: any, digito: any) {
           reject(err)
         } else {
           console.log('Chegou no Else do DbQuery')
+          console.log('Existe Agencia?', result)
           resolve(result)
         }
         db.detach()
