@@ -115,6 +115,7 @@ export function query_seq_agencia() {
           reject(err)
         } else {
           console.log('Chegou no Else do DbQuery')
+          console.log(result[0].SEQ)
           resolve(result[0].SEQ)
         }
         db.detach()
