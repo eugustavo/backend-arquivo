@@ -186,6 +186,37 @@ export function query_seq_conta() {
     })
   })
 }
+export function query_seq_vinc_empresa( empresa: any) {
+
+  const sql = `select coalesce(max(seq)+1,1) AS SEQ from CONTABANCARIAEMPRESA where codigoempresa = ${empresa}`
+
+  console.log(sql)
+
+  return new Promise((resolve, reject) => {
+    console.log('Chegou na Promise')
+    firebird.attach(options, function (err: any, db: any): any {
+      console.log('Chegou no Attach')
+      if (err) {
+        console.log('Chegou no Erro do Attach')
+        console.error('Erro na Conexão: ', err)
+        reject(err)
+      }
+      console.log('Chegou antes do DbQuery')
+      db.query(sql, function (err: any, result: any): any {
+        console.log('Chegou no DbQuery')
+        if (err) {
+          console.error('Erro na Query: ', err)
+          reject(err)
+        } else {
+          console.log('Chegou no Else do DbQuery')
+          console.log(result[0].SEQ)
+          resolve(result[0].SEQ)
+        }
+        db.detach()
+      })
+    })
+  })
+}
 export function query_cadastra_agencia(banco: any, agencia: any, digito: any, seq: any) {
 
   const sql = `INSERT INTO AGENCIA (CODIGOBANCO, NUMEROAGENCIA, DIGITOAGENCIA, NOMEAGENCIA, CODIGOAGENCIABANC) VALUES ('${banco}', '${agencia}', '${digito}', 'Importação Sigra', '${seq}')`
@@ -219,6 +250,36 @@ export function query_cadastra_agencia(banco: any, agencia: any, digito: any, se
 export function query_cadastra_conta(codigo: any, banco: any, agencia: any, conta: any, digito: any) {
 
   const sql = `INSERT INTO CONTABANCARIA (CODIGOCONTABANCARIA, CODIGOBANCO, NUMEROAGENCIA, NUMEROCONTA, DIGITOCONTA) VALUES ('${codigo}', '${banco}', '${agencia}', '${conta}', '${digito}')`
+
+  console.log(sql)
+
+  return new Promise((resolve, reject) => {
+    console.log('Chegou na Promise')
+    firebird.attach(options, function (err: any, db: any): any {
+      console.log('Chegou no Attach')
+      if (err) {
+        console.log('Chegou no Erro do Attach')
+        console.error('Erro na Conexão: ', err)
+        reject(err)
+      }
+      console.log('Chegou antes do DbQuery')
+      db.query(sql, function (err: any, result: any): any {
+        console.log('Chegou no DbQuery')
+        if (err) {
+          console.error('Erro na Query: ', err)
+          reject(err)
+        } else {
+          console.log('Chegou no Else do DbQuery')
+          resolve(result)
+        }
+        db.detach()
+      })
+    })
+  })
+}
+export function query_vincula_empresa(seq: any, conta: any, empresa: any) {
+
+  const sql = `INSERT INTO CONTABANCARIAEMPRESA (SEQ, CODIGOCONTABANCARIA, CODIGOEMPRESA) VALUES ('${seq}', '${conta}', '${empresa}')`
 
   console.log(sql)
 
