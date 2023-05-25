@@ -145,6 +145,7 @@ export function query_seq_conta() {
           reject(err)
         } else {
           console.log('Chegou no Else do DbQuery')
+          console.log(result)
           resolve(result[0].SEQ)
         }
         db.detach()
