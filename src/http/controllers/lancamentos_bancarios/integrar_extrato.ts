@@ -45,6 +45,8 @@ export async function extrato_insert(
 
         const existeAgencia: any = await query_existe_agencia(dados_conta_agencia, dados_conta_banco, dados_conta_agencia_digito)
 
+        console.log('Existe Agência: ' , existeAgencia)
+
         if (existeAgencia.rowCount == 0) {
 
             const getSeqAgencia: any = await query_seq_agencia()
@@ -58,7 +60,7 @@ export async function extrato_insert(
                 const getSeqConta: any = await query_seq_conta()
                 console.log('getSeqContaObtido:' + getSeqConta)
 
-                await query_cadastra_conta(getSeqConta, dados_conta_banco, existeAgencia[0].numeroagencia, dados_conta_conta, dados_conta_conta_digito)
+                await query_cadastra_conta(getSeqConta, dados_conta_banco, existeAgencia.numeroagencia, dados_conta_conta, dados_conta_conta_digito)
 
                 await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
             }
@@ -67,7 +69,7 @@ export async function extrato_insert(
 
             const getSeq: any = await query_seq_conta()
 
-            await query_cadastra_conta(getSeq, dados_conta_banco, existeAgencia[0].numeroagencia, dados_conta_conta, dados_conta_conta_digito)
+            await query_cadastra_conta(getSeq, dados_conta_banco, existeAgencia.numeroagencia, dados_conta_conta, dados_conta_conta_digito)
 
             await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
 
