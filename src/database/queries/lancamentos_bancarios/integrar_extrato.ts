@@ -95,7 +95,7 @@ export function query_existe_agencia(agencia: any, banco: any) {
 }
 export function query_get_agencia(agencia: any, banco: any) {
 
-  const sql = `select CODIGOAGENCIA from AGENCIA A WHERE A.CODIGOBANCO = '${banco}' AND A.NUMEROAGENCIA = '${agencia}' `
+  const sql = `select NUMEROAGENCIA from AGENCIA A WHERE A.CODIGOBANCO = '${banco}' AND A.NUMEROAGENCIA = '${agencia}' `
 
   console.log(sql)
 
@@ -117,7 +117,7 @@ export function query_get_agencia(agencia: any, banco: any) {
         } else {
           console.log('Chegou no Else do DbQuery')
           console.log('Existe Agencia?', result)
-          resolve(result[0].CODIGOAGENCIA)
+          resolve(result[0].NUMEROAGENCIA)
         }
         db.detach()
       })
