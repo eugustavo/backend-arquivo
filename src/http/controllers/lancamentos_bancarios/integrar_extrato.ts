@@ -12,7 +12,8 @@ import {
     query_cadastra_agencia,
     query_get_agencia,
     query_vincula_empresa,
-    query_get_conta_cadastrada
+    query_get_conta_cadastrada,
+    query_vincula_ctb
 
 } from '@/database/queries/lancamentos_bancarios/integrar_extrato'
 
@@ -63,9 +64,14 @@ export async function extrato_insert(
                 const codAgencia: any = await query_get_agencia(dados_conta_agencia, dados_conta_banco)
 
                 const getSeqConta: any = await query_seq_conta()
-                console.log('getSeqContaObtido:' + getSeqConta)
+                const getSeqVincEmpresa: any = await query_seq_vinc_empresa(empresa)
 
                 await query_cadastra_conta(getSeqConta, dados_conta_banco, codAgencia, dados_conta_conta, dados_conta_conta_digito)
+
+                const codigoConta: any = await query_get_conta_cadastrada(dados_conta_agencia, dados_conta_conta, dados_conta_conta_digito, dados_conta_banco)
+
+                await query_vincula_empresa(getSeqVincEmpresa, codigoConta, empresa)
+                await query_vincula_ctb(codigoConta, conta_ctb, empresa, estab)
 
                 await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
             }
@@ -78,19 +84,17 @@ export async function extrato_insert(
             const getSeqVincEmpresa: any = await query_seq_vinc_empresa(empresa)
 
             await query_cadastra_conta(getSeqConta, dados_conta_banco, codAgencia, dados_conta_conta, dados_conta_conta_digito)
-            
-            const codigoConta: any = await query_get_conta_cadastrada(dados_conta_agencia, dados_conta_conta, dados_conta_conta_digito, dados_conta_banco)
-            
-            await query_vincula_empresa(getSeqVincEmpresa, codigoConta, empresa)
 
+            const codigoConta: any = await query_get_conta_cadastrada(dados_conta_agencia, dados_conta_conta, dados_conta_conta_digito, dados_conta_banco)
+
+            await query_vincula_empresa(getSeqVincEmpresa, codigoConta, empresa)
+            await query_vincula_ctb(codigoConta, conta_ctb, empresa, estab)
 
             await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
 
         }
 
     }
-
-
 
     reply.send({
         message: 'ok'

@@ -313,3 +313,35 @@ export function query_vincula_empresa(seq: any, conta: any, empresa: any) {
     })
   })
 }
+export function query_vincula_ctb(conta: any, conta_ctb: any, empresa: any, estab: any) {
+
+  console.log('Função Acionada: query_vincula_ctb')
+
+  const sql = `INSERT INTO bancoconta (CODIGOCONTABANCARIA, CODIGOEMPRESA, CODIGOESTAB, CONTACTB) VALUES ('${conta}', '${empresa}', '${estab}', '${conta_ctb}')`
+
+  console.log(sql)
+
+  return new Promise((resolve, reject) => {
+    
+    firebird.attach(options, function (err: any, db: any): any {
+      
+      if (err) {
+        
+        console.error('Erro na Conexão: ', err)
+        reject(err)
+      }
+      
+      db.query(sql, function (err: any, result: any): any {
+        
+        if (err) {
+          console.error('Erro na Query: ', err)
+          reject(err)
+        } else {
+          
+          resolve(result)
+        }
+        db.detach()
+      })
+    })
+  })
+}
