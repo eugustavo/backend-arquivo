@@ -93,6 +93,37 @@ export function query_existe_agencia(agencia: any, banco: any) {
     })
   })
 }
+export function query_get_agencia(agencia: any, banco: any) {
+
+  const sql = `select CODIGOAGENCIA from AGENCIA A WHERE A.CODIGOBANCO = '${banco}' AND A.NUMEROAGENCIA = '${agencia}' `
+
+  console.log(sql)
+
+  return new Promise((resolve, reject) => {
+    console.log('Chegou na Promise')
+    firebird.attach(options, function (err: any, db: any): any {
+      console.log('Chegou no Attach')
+      if (err) {
+        console.log('Chegou no Erro do Attach')
+        console.error('Erro na Conexão: ', err)
+        reject(err)
+      }
+      console.log('Chegou antes do DbQuery')
+      db.query(sql, function (err: any, result: any): any {
+        console.log('Chegou no DbQuery')
+        if (err) {
+          console.error('Erro na Query: ', err)
+          reject(err)
+        } else {
+          console.log('Chegou no Else do DbQuery')
+          console.log('Existe Agencia?', result)
+          resolve(result[0].CODIGOAGENCIA)
+        }
+        db.detach()
+      })
+    })
+  })
+}
 export function query_seq_agencia() {
 
   const sql = `SELECT MAX(CODIGOAGENCIABANC)+1 AS SEQ FROM AGENCIA `

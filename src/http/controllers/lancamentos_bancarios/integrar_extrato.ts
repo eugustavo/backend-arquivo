@@ -8,7 +8,8 @@ import {
     query_cadastra_conta,
     query_seq_agencia,
     query_seq_conta,
-    query_cadastra_agencia
+    query_cadastra_agencia,
+    query_get_agencia
 
 } from '@/database/queries/lancamentos_bancarios/integrar_extrato'
 
@@ -55,20 +56,24 @@ export async function extrato_insert(
             const existeAgencia: any = await query_existe_agencia(dados_conta_agencia, dados_conta_banco)
 
             if (existeAgencia > 0) {
+
+                const codAgencia: any = await query_get_agencia(dados_conta_agencia, dados_conta_banco)
                 
                 const getSeqConta: any = await query_seq_conta()
                 console.log('getSeqContaObtido:' + getSeqConta)
 
-                await query_cadastra_conta(getSeqConta, dados_conta_banco, existeAgencia.numeroagencia, dados_conta_conta, dados_conta_conta_digito)
+                await query_cadastra_conta(getSeqConta, dados_conta_banco, codAgencia, dados_conta_conta, dados_conta_conta_digito)
 
                 // await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
             }
 
         } else {
 
+            const codAgencia: any = await query_get_agencia(dados_conta_agencia, dados_conta_banco)
+
             const getSeq: any = await query_seq_conta()
 
-            await query_cadastra_conta(getSeq, dados_conta_banco, existeAgencia.numeroagencia, dados_conta_conta, dados_conta_conta_digito)
+            await query_cadastra_conta(getSeq, dados_conta_banco, codAgencia, dados_conta_conta, dados_conta_conta_digito)
 
             // await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
 
