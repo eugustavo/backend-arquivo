@@ -43,7 +43,7 @@ export async function extrato_insert(
 
     if (existeConta > 0) {
 
-        // await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
+        await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
 
     } else {
 
@@ -67,7 +67,7 @@ export async function extrato_insert(
 
                 await query_cadastra_conta(getSeqConta, dados_conta_banco, codAgencia, dados_conta_conta, dados_conta_conta_digito)
 
-                // await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
+                await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
             }
 
         } else {
@@ -84,7 +84,7 @@ export async function extrato_insert(
             await query_vincula_empresa(getSeqVincEmpresa, codigoConta, empresa)
 
 
-            // await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
+            await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
 
         }
 
