@@ -43,7 +43,7 @@ export async function extrato_insert(
 
     } else {
 
-        const existeAgencia: any = await query_existe_agencia(dados_conta_agencia, dados_conta_banco, dados_conta_agencia_digito)
+        const existeAgencia: any = await query_existe_agencia(dados_conta_agencia, dados_conta_banco)
         
 
         if (!existeAgencia) {
@@ -52,7 +52,7 @@ export async function extrato_insert(
 
             await query_cadastra_agencia(dados_conta_banco, dados_conta_agencia, dados_conta_agencia_digito, getSeqAgencia)
 
-            const existeAgencia: any = await query_existe_agencia(dados_conta_agencia, dados_conta_banco, dados_conta_agencia_digito)
+            const existeAgencia: any = await query_existe_agencia(dados_conta_agencia, dados_conta_banco)
 
             if (existeAgencia) {
                 

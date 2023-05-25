@@ -62,9 +62,9 @@ export function query_existe_conta_cadastrada(agencia: any, conta: any, digito: 
     })
   })
 }
-export function query_existe_agencia(agencia: any, banco: any, digito: any) {
+export function query_existe_agencia(agencia: any, banco: any) {
 
-  const sql = `select * from AGENCIA A WHERE A.CODIGOBANCO = '${banco}' AND A.NUMEROAGENCIA = '${agencia}' AND A.DIGITOAGENCIA = '${digito}'`
+  const sql = `select * from AGENCIA A WHERE A.CODIGOBANCO = '${banco}' AND A.NUMEROAGENCIA = '${agencia}' `
 
   console.log(sql)
 
