@@ -34,7 +34,7 @@ export function query_extrato_insert(empresa: any, estab: any, conta_ctb: any, d
 
 export function query_existe_conta_cadastrada(agencia: any, conta: any, digito: any, banco: any) {
 
-  const sql = `select * from CONTABANCARIA A WHERE A.CODIGOBANCO = '${banco}' AND A.NUMEROAGENCIA = '${agencia}' AND A.NUMEROCONTA = '${conta}' AND A.DIGITOCONTA = '${digito}'`
+  const sql = `select count(*) as QTDE from CONTABANCARIA A WHERE A.CODIGOBANCO = '${banco}' AND A.NUMEROAGENCIA = '${agencia}' AND A.NUMEROCONTA = '${conta}' AND A.DIGITOCONTA = '${digito}'`
 
   console.log(sql)
 
@@ -55,7 +55,7 @@ export function query_existe_conta_cadastrada(agencia: any, conta: any, digito: 
           reject(err)
         } else {
           console.log('Chegou no Else do DbQuery')
-          resolve(result)
+          resolve(result[0].QTDE)
         }
         db.detach()
       })
@@ -64,7 +64,7 @@ export function query_existe_conta_cadastrada(agencia: any, conta: any, digito: 
 }
 export function query_existe_agencia(agencia: any, banco: any) {
 
-  const sql = `select * from AGENCIA A WHERE A.CODIGOBANCO = '${banco}' AND A.NUMEROAGENCIA = '${agencia}' `
+  const sql = `select count(*) as QTDE from AGENCIA A WHERE A.CODIGOBANCO = '${banco}' AND A.NUMEROAGENCIA = '${agencia}' `
 
   console.log(sql)
 
@@ -86,7 +86,7 @@ export function query_existe_agencia(agencia: any, banco: any) {
         } else {
           console.log('Chegou no Else do DbQuery')
           console.log('Existe Agencia?', result)
-          resolve(result)
+          resolve(result[0].QTDE)
         }
         db.detach()
       })
