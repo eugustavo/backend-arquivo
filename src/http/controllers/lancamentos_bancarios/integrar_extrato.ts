@@ -44,8 +44,7 @@ export async function extrato_insert(
     } else {
 
         const existeAgencia: any = await query_existe_agencia(dados_conta_agencia, dados_conta_banco, dados_conta_agencia_digito)
-
-        console.log('Existe Agência: ' , await existeAgencia)
+        
 
         if (existeAgencia.rowCount == 0) {
 
