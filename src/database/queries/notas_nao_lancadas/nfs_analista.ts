@@ -35,9 +35,8 @@ export function query_nfs_analista(data1: any, data2: any, analista: any) {
           console.log(result.length)
           resolve(result)
         }
-      }).finally(() => {
-        db.detach()
       })
+      db.detach()
     })
   })
 }

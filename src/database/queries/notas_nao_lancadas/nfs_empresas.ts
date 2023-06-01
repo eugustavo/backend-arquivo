@@ -34,9 +34,8 @@ export function query_nfs_empresas(data1: any, data2: any) {
           console.log(result.length)
           resolve(result)
         }
-      }).finally(() => {
-        db.detach()
       })
+      db.detach()
     })
   })
 }
