@@ -23,8 +23,7 @@ export function query_nfs_empresas(data1: any, data2: any) {
       }
       console.log('Chegou antes do DbQuery')
       db.query(sql, function (err: any, result: any): any {
-        console.log('Chegou no DbQuery')
-        db.detach()
+        console.log('Chegou no DbQuery') 
         if (err) {
           console.error('Erro na Query: ', err)
           reject(err)
