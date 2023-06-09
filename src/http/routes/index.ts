@@ -19,6 +19,7 @@ import { difal_difa_inserir } from '../controllers/auditor_fiscal/difal/difa_ant
 import { DifaInternaResumo } from '../controllers/auditor_fiscal/difal/dif_interna'
 
 import { cmi_simples_nacional_empresas } from '../controllers/cmi/simples_nacional/empresas'
+import { cmi_simples_nacional_analistas } from '../controllers/cmi/simples_nacional/analistas'
 
 import { listas_empresas_analista } from '../controllers/listas/empresas_analista'
 import { listas_empresas_ativas } from '../controllers/listas/empresas_ativas'
