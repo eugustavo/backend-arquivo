@@ -69,7 +69,7 @@ export async function appRoutes(app: FastifyInstance) {
 
   // Controles Mensais de Impostos - Simples Nacional
   app.post('/auditor_fiscal/cmi/simples_nacional/empresas', cmi_simples_nacional_empresas)
-  app.post('/auditor_fiscal/cmi/simples_nacional/analista', cmi_simples_nacional_analistas)
+  app.post('/auditor_fiscal/cmi/simples_nacional/analistas', cmi_simples_nacional_analistas)
 
   // Extrato Bancário
   app.post('/questor/bancos/extrato/incluir', extrato_insert)
