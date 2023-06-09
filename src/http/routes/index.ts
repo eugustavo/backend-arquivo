@@ -20,6 +20,7 @@ import { DifaInternaResumo } from '../controllers/auditor_fiscal/difal/dif_inter
 
 import { cmi_simples_nacional_empresas } from '../controllers/cmi/simples_nacional/empresas'
 import { cmi_simples_nacional_analistas } from '../controllers/cmi/simples_nacional/analistas'
+import { cmi_canais_envio } from '../controllers/cmi/canais_envio'
 
 import { listas_empresas_analista } from '../controllers/listas/empresas_analista'
 import { listas_empresas_ativas } from '../controllers/listas/empresas_ativas'
@@ -70,6 +71,7 @@ export async function appRoutes(app: FastifyInstance) {
   // Controles Mensais de Impostos - Simples Nacional
   app.post('/auditor_fiscal/cmi/simples_nacional/empresas', cmi_simples_nacional_empresas)
   app.post('/auditor_fiscal/cmi/simples_nacional/analistas', cmi_simples_nacional_analistas)
+  app.post('/auditor_fiscal/cmi/canais_envio', cmi_canais_envio)
 
   // Extrato Bancário
   app.post('/questor/bancos/extrato/incluir', extrato_insert)
