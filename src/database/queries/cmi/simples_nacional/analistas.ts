@@ -7,7 +7,7 @@ export function Query_CMI_Simples_Analistas() {
         A.CODIGOEMPRESA,
         A.CODIGOESTAB,
         A.INSCRFEDERAL,
-        A.NOMEESTABCOMPLETO,
+        cast(A.NOMEESTABCOMPLETO as varchar(120) character set win1252) as NOMEESTAB
         B.CODIGOUSUARIO,
         B.NOMEUSUARIO
         from  estab a left join usuario b on (a.CVMAUDITOR = B.CODIGOUSUARIO)
