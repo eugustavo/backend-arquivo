@@ -10,7 +10,7 @@ export function Query_CMI_Simples_Empresas(data1: any) {
         cast(NOMEESTAB as varchar(120) character set win1252) as NOMEESTAB,
         CODIGOEMPRESA_CODIGOESTAB,
         cast(ULTIMA_OPCAO as date) as ULTIMA_OPCAO
-    FROM SIGRA_CMI_SIMPLES_EMPRESAS ('${data1}')`
+        FROM SIGRA_CMI_SIMPLES_EMPRESAS ('${data1}')`
 
     console.log(sql)
 

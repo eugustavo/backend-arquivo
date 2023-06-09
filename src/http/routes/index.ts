@@ -35,6 +35,7 @@ import { sinc_contas_ctb_bancos } from '../controllers/sincronizacao/contas_ctb_
 
 import { extrato_insert } from '../controllers/lancamentos_bancarios/integrar_extrato'
 import { sinc_empresas } from '../controllers/sincronizacao/empresas'
+import { cmi_simples_nacional_debito } from '../controllers/cmi/simples_nacional/debito'
 
 
 var os = require("os");
@@ -73,6 +74,7 @@ export async function appRoutes(app: FastifyInstance) {
   app.post('/auditor_fiscal/cmi/simples_nacional/empresas', cmi_simples_nacional_empresas)
   app.post('/auditor_fiscal/cmi/simples_nacional/analistas', cmi_simples_nacional_analistas)
   app.post('/auditor_fiscal/cmi/simples_nacional/apuracao', cmi_simples_nacional_apuracao)
+  app.post('/auditor_fiscal/cmi/simples_nacional/debito', cmi_simples_nacional_debito)
   app.post('/auditor_fiscal/cmi/canais_envio', cmi_canais_envio)
 
   // Extrato Bancário
