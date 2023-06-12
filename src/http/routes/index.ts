@@ -38,6 +38,8 @@ import { extrato_insert } from '../controllers/lancamentos_bancarios/integrar_ex
 import { sinc_empresas } from '../controllers/sincronizacao/empresas'
 import { cmi_simples_nacional_debito } from '../controllers/cmi/simples_nacional/debito'
 
+import { job_sinc_funcionarios } from '../controllers/jobs/sincronizacao'
+
 
 var os = require("os");
 var hostname = os.hostname();
@@ -94,4 +96,7 @@ export async function appRoutes(app: FastifyInstance) {
   app.get('/sincronizacao/empresas', sinc_empresas)
   app.get('/sincronizacao/contas_ctb_bancos', sinc_contas_ctb_bancos)
   app.get('/sincronizacao/vencimentos_impostos', sinc_vencimentos_impostos)
+
+  // Testes
+  app.get('/sincronizacao/teste', job_sinc_funcionarios)
 }
