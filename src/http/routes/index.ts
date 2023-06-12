@@ -32,6 +32,7 @@ import { listas_cst_ipi } from '../controllers/listas/cst_ipi'
 import { sinc_funcionarios } from '../controllers/sincronizacao/funcionarios'
 import { sinc_operadores } from '../controllers/sincronizacao/operadores'
 import { sinc_contas_ctb_bancos } from '../controllers/sincronizacao/contas_ctb_bancos'
+import { sinc_vencimentos_impostos } from '../controllers/sincronizacao/vencimentos_impostos'
 
 import { extrato_insert } from '../controllers/lancamentos_bancarios/integrar_extrato'
 import { sinc_empresas } from '../controllers/sincronizacao/empresas'
@@ -92,4 +93,5 @@ export async function appRoutes(app: FastifyInstance) {
   app.get('/sincronizacao/operadores', sinc_operadores)
   app.get('/sincronizacao/empresas', sinc_empresas)
   app.get('/sincronizacao/contas_ctb_bancos', sinc_contas_ctb_bancos)
+  app.get('/sincronizacao/vencimentos_impostos', sinc_vencimentos_impostos)
 }
