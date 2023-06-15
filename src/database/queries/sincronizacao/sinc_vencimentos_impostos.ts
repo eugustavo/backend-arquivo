@@ -4,7 +4,15 @@ import { options } from '../../../lib/firebird'
 export function query_sinc_vencimentos_impostos() {
 
 
-  const sql = `SELECT * FROM IMPOSTOVENCIMENTO`
+  const sql = `SELECT
+  case when CODIGOIMPOSTO = 6106 then 3333 else CODIGOIMPOSTO end as CODIGOIMPOSTO,
+  VARIACAOIMPOSTO,
+  periodoapuracaoinicial,
+  periodoapuracaofinal,
+  vencimentoquota1,
+  vencimentoquota2,
+  vencimentoquota3
+  FROM IMPOSTOVENCIMENTO`
 
   console.log(sql)
 
