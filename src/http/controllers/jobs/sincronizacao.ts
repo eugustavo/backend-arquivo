@@ -12,42 +12,46 @@ export async function job_sinc_funcionarios() {
 
     console.log('Total de Funcionários para Sincronizar: ' + listaSincronizar.length)
 
-    for (let i = 0; i < listaSincronizar.length; i++) {
+    const grupos: any = []
+    const tamanhoGrupo = 100
+    for (let i = 0; i < listaSincronizar.length; i += tamanhoGrupo) {
+        grupos.push(listaSincronizar.slice(i, i + tamanhoGrupo))
+    }
 
-        axios.post('https://api.aws.inf.br/connect/questor/funcionarios/incluir',
-            {
-                empresa: listaSincronizar[i].CODIGOEMPRESA,
-                estab: listaSincronizar[i].CODIGOESTAB,
-                contrato: listaSincronizar[i].CODIGOFUNCCONTR,
-                pessoa: listaSincronizar[i].CODIGOFUNCPESSOA,
-                cpf: listaSincronizar[i].CPFFUNC,
-                nome: listaSincronizar[i].NOMEFUNC
-            },
-            {
-                headers: {
-                    contenType: 'application/json'
-                }
-            })
+    grupos.forEach((grupo: any) => {
+        const promises = grupo.map((funcionario: any) => {
+            return axios.post('https://api.aws.inf.br/connect/questor/funcionarios/incluir',
+                {
+                    empresa: funcionario.CODIGOEMPRESA,
+                    estab: funcionario.CODIGOESTAB,
+                    contrato: funcionario.CODIGOFUNCCONTR,
+                    pessoa: funcionario.CODIGOFUNCPESSOA,
+                    cpf: funcionario.CPFFUNC,
+                    nome: funcionario.NOMEFUNC
+                },
+                {
+                    headers: {
+                        contenType: 'application/json'
+                    }
+                })
+        })
 
-            .then(function (response) {
-
-                if (response.status === 201) {
-
-                    console.log('Funcionário Incluído com Sucesso')
-
-                } else {
-                    console.log('Erro ao Incluir Funcionário')
-                }
-
+        Promise.all(promises)
+            .then(function (responses) {
+                responses.forEach((response) => {
+                    if (response.status === 201) {
+                        console.log('Funcionário Incluído com Sucesso')
+                    } else {
+                        console.log('Erro ao Incluir Funcionário')
+                    }
+                })
             })
             .catch(function (error) {
                 console.log('Falha no Processo:', error)
-
             })
-
-    }
-
+    })
 }
+
 export async function job_sinc_empresas() {
 
     console.log('Iniciando Sincronização Agendada de Empresas')

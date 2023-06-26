@@ -102,9 +102,7 @@ export async function extrato_insert(
             if (jaExisteExtrato == 0) {
                 await query_extrato_insert(empresa, estab, conta_ctb, data, seq, numero, tipo, valor, descricao)
             }
-
         }
-
     }
 
     reply.send({
