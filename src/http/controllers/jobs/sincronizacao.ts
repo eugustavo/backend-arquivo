@@ -12,7 +12,6 @@ export async function job_sinc_funcionarios() {
 
     console.log('Total de Funcionários para Sincronizar: ' + listaSincronizar.length)
 
-    const gruposFuncionarios = []
     const tamanhoGrupo = 500
     for (let i = 0; i < listaSincronizar.length; i += tamanhoGrupo) {
         const grupo = listaSincronizar.slice(i, i + tamanhoGrupo)
@@ -26,10 +25,6 @@ export async function job_sinc_funcionarios() {
                 nome: funcionario.NOMEFUNC
             }
         })
-        gruposFuncionarios.push(funcionarios)
-    }
-
-    gruposFuncionarios.forEach((funcionarios: any) => {
         axios.post('https://api.aws.inf.br/connect/questor/funcionarios/incluir',
             funcionarios,
             {
@@ -47,8 +42,9 @@ export async function job_sinc_funcionarios() {
             .catch(function (error) {
                 console.log('Falha no Processo:', error)
             })
-    })
+    }
 }
+
 
 
 
