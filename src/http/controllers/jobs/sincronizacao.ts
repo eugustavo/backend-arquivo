@@ -12,45 +12,36 @@ export async function job_sinc_funcionarios() {
 
     console.log('Total de Funcionários para Sincronizar: ' + listaSincronizar.length)
 
-    const grupos: any = []
-    const tamanhoGrupo = 100
-    for (let i = 0; i < listaSincronizar.length; i += tamanhoGrupo) {
-        grupos.push(listaSincronizar.slice(i, i + tamanhoGrupo))
-    }
-
-    grupos.forEach((grupo: any) => {
-        const promises = grupo.map((funcionario: any) => {
-            return axios.post('https://api.aws.inf.br/connect/questor/funcionarios/incluir',
-                {
-                    empresa: funcionario.CODIGOEMPRESA,
-                    estab: funcionario.CODIGOESTAB,
-                    contrato: funcionario.CODIGOFUNCCONTR,
-                    pessoa: funcionario.CODIGOFUNCPESSOA,
-                    cpf: funcionario.CPFFUNC,
-                    nome: funcionario.NOMEFUNC
-                },
-                {
-                    headers: {
-                        contenType: 'application/json'
-                    }
-                })
-        })
-
-        Promise.all(promises)
-            .then(function (responses) {
-                responses.forEach((response) => {
-                    if (response.status === 201) {
-                        console.log('Funcionário Incluído com Sucesso')
-                    } else {
-                        console.log('Erro ao Incluir Funcionário')
-                    }
-                })
-            })
-            .catch(function (error) {
-                console.log('Falha no Processo:', error)
-            })
+    const funcionarios = listaSincronizar.map((funcionario: any) => {
+        return {
+            empresa: funcionario.CODIGOEMPRESA,
+            estab: funcionario.CODIGOESTAB,
+            contrato: funcionario.CODIGOFUNCCONTR,
+            pessoa: funcionario.CODIGOFUNCPESSOA,
+            cpf: funcionario.CPFFUNC,
+            nome: funcionario.NOMEFUNC
+        }
     })
+
+    axios.post('https://api.aws.inf.br/connect/questor/funcionarios/incluir',
+        funcionarios,
+        {
+            headers: {
+                contenType: 'application/json'
+            }
+        })
+        .then(function (response) {
+            if (response.status === 201) {
+                console.log('Funcionários Incluídos com Sucesso')
+            } else {
+                console.log('Erro ao Incluir Funcionários')
+            }
+        })
+        .catch(function (error) {
+            console.log('Falha no Processo:', error)
+        })
 }
+
 
 export async function job_sinc_empresas() {
 
