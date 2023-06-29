@@ -7,7 +7,7 @@ export function Query_CMI_Icms_1449_Empresas(data1: any) {
         b.CODIGOEMPRESA,
         b.CODIGOESTAB,
         b.INSCRFEDERAL,
-        b.NOMEESTAB,
+        cast(b.NOMEESTAB as varchar(120) character set win1252) as NOMEESTAB,
         b.CODIGOEMPRESA||'|'|| b.CODIGOESTAB,
         a.DATAICMSSC ultima_opcao,
         a.VARIACAOIMPOSTOICMS
