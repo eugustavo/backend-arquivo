@@ -18,7 +18,7 @@ export function Query_CMI_Icms_1449_Empresas(data1: any) {
         codigoestab,
         max (DATAICMSSC)DATAEFD 
         from OPCAOICMSSC
-        WHERE DATAICMSSC  <=  ${data1}
+        WHERE DATAICMSSC  <=  '${data1}'
         group by 1,2
         order by 1,2) sel 
         where 
@@ -26,7 +26,7 @@ export function Query_CMI_Icms_1449_Empresas(data1: any) {
         a.CODIGOESTAB = sel.CODIGOESTAB and  
         a.DATAICMSSC  = sel.DATAEFD  and 
         a.APURAICMSSC  = 1 and
-        b.DATAENCERATIV > ${data1}
+        b.DATAENCERATIV > '${data1}'
         and a.CODIGOIMPOSTOICMS = 1449`
 
 
