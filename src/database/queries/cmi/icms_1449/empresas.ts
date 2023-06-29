@@ -10,7 +10,8 @@ export function Query_CMI_Icms_1449_Empresas(data1: any) {
         cast(b.NOMEESTAB as varchar(120) character set win1252) as NOMEESTAB,
         b.CODIGOEMPRESA||'|'|| b.CODIGOESTAB,
         a.DATAICMSSC ultima_opcao,
-        a.VARIACAOIMPOSTOICMS
+        a.VARIACAOIMPOSTOICMS,
+        a.CODIGOIMPOSTOICMS as CODIGOIMPOSTO
         from estab b left join 
         OPCAOICMSSC    a on (b.CODIGOEMPRESA = a.CODIGOEMPRESA and a.CODIGOESTAB = b.CODIGOESTAB),
         (select 

@@ -7,6 +7,7 @@ export function Query_CMI_Simples_Empresas(data1: any) {
         CODIGOEMPRESA,
         CODIGOESTAB,
         INSCRFEDERAL,
+        '1449' as CODIGOIMPOSTO,
         cast(NOMEESTAB as varchar(120) character set win1252) as NOMEESTAB,
         CODIGOEMPRESA_CODIGOESTAB,
         cast(ULTIMA_OPCAO as date) as ULTIMA_OPCAO
