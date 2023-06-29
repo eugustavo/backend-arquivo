@@ -23,6 +23,8 @@ import { cmi_simples_nacional_analistas } from '../controllers/cmi/simples_nacio
 import { cmi_simples_nacional_apuracao } from '../controllers/cmi/simples_nacional/apuracao'
 import { cmi_canais_envio } from '../controllers/cmi/canais_envio'
 
+import { cmi_icms_1449_empresas } from '../controllers/cmi/icms_1449/empresas'
+
 import { listas_empresas_analista } from '../controllers/listas/empresas_analista'
 import { listas_empresas_ativas } from '../controllers/listas/empresas_ativas'
 import { listas_cfop_empresa } from '../controllers/listas/cfop_empresa'
@@ -79,6 +81,9 @@ export async function appRoutes(app: FastifyInstance) {
   app.post('/auditor_fiscal/cmi/simples_nacional/apuracao', cmi_simples_nacional_apuracao)
   app.post('/auditor_fiscal/cmi/simples_nacional/debito', cmi_simples_nacional_debito)
   app.post('/auditor_fiscal/cmi/canais_envio', cmi_canais_envio)
+
+  // Controles Mensais de Impostos - ICMS 1449
+  app.post('/auditor_fiscal/cmi/icms_1449/empresas', cmi_icms_1449_empresas)
 
   // Extrato Bancário
   app.post('/questor/bancos/extrato/incluir', extrato_insert)
