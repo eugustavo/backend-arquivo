@@ -1,13 +1,25 @@
+const fs = require('fs');
+
+
 process.on('uncaughtException', (error) => {
   console.error('Erro não tratado:', error);
-  // Tomar medidas adequadas, como registrar o erro ou reiniciar o servidor
+  logError(error);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Rejeição não tratada:', reason);
-  // Tomar medidas adequadas, como registrar o erro ou reiniciar o servidor
+  logError(reason);
 });
 
+function logError(error: any) {
+  const logMessage = `Data/Hora: ${new Date().toISOString()}\nErro: ${error.stack}\n\n`;
+
+  fs.appendFile('error.log', logMessage, (err: any) => {
+    if (err) {
+      console.error('Erro ao gravar o log de erro:', err);
+    }
+  });
+}
 
 import { app } from './app'
 import { env } from './env'
