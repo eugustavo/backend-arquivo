@@ -1,3 +1,14 @@
+process.on('uncaughtException', (error) => {
+  console.error('Erro não tratado:', error);
+  // Tomar medidas adequadas, como registrar o erro ou reiniciar o servidor
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Rejeição não tratada:', reason);
+  // Tomar medidas adequadas, como registrar o erro ou reiniciar o servidor
+});
+
+
 import { app } from './app'
 import { env } from './env'
 import schedule from 'node-schedule';
