@@ -112,18 +112,18 @@ export async function job_sinc_empresas() {
         const grupo = listaSincronizar.slice(i, i + tamanhoGrupo)
         const empresas = grupo.map((empresa: any) => {
             return {
-                id: empresas.CODIGOEMPRESA,
-                nome: empresas.FANTASIA,
-                razao: empresas.RAZAO,
-                cnpj: empresas.CNPJ,
-                empresa: empresas.QUESTOR_EMPRESA,
-                estabelecimento: empresas.QUESTOR_ESTABELECIMENTO,
-                datacad: empresas.DATA_CAD,
-                endereco: empresas.TIPO + ' ' + empresas.ENDERECO,
-                numero: empresas.NUMERO,
-                bairro: empresas.BAIRRO,
-                cidade: empresas.CIDADE,
-                uf: empresas.UF
+                id: empresa.CODIGOEMPRESA,
+                nome: empresa.FANTASIA,
+                razao: empresa.RAZAO,
+                cnpj: empresa.CNPJ,
+                empresa: empresa.QUESTOR_EMPRESA,
+                estabelecimento: empresa.QUESTOR_ESTABELECIMENTO,
+                datacad: empresa.DATA_CAD,
+                endereco: empresa.TIPO + ' ' + empresa.ENDERECO,
+                numero: empresa.NUMERO,
+                bairro: empresa.BAIRRO,
+                cidade: empresa.CIDADE,
+                uf: empresa.UF
             }
         })
         axios.post('https://api.aws.inf.br/connect/questor/empresas/incluir',
