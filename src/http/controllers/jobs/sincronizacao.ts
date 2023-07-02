@@ -48,6 +48,57 @@ export async function job_sinc_funcionarios() {
 
 
 
+// export async function job_sinc_empresas() {
+
+//     console.log('Iniciando Sincronização Agendada de Empresas')
+
+//     const listaSincronizar: any = await query_sinc_empresas()
+
+//     console.log('Total de Empresas para Sincronizar: ' + listaSincronizar.length)
+
+//     for (let i = 0; i < listaSincronizar.length; i++) {
+
+//         axios.post('https://api.aws.inf.br/connect/questor/empresas/incluir',
+//             {
+//                 id: listaSincronizar[i].CODIGOEMPRESA,
+//                 nome: listaSincronizar[i].FANTASIA,
+//                 razao: listaSincronizar[i].RAZAO,
+//                 cnpj: listaSincronizar[i].CNPJ,
+//                 empresa: listaSincronizar[i].QUESTOR_EMPRESA,
+//                 estabelecimento: listaSincronizar[i].QUESTOR_ESTABELECIMENTO,
+//                 datacad: listaSincronizar[i].DATA_CAD,
+//                 endereco: listaSincronizar[i].TIPO + ' ' + listaSincronizar[i].ENDERECO,
+//                 numero: listaSincronizar[i].NUMERO,
+//                 bairro: listaSincronizar[i].BAIRRO,
+//                 cidade: listaSincronizar[i].CIDADE,
+//                 uf: listaSincronizar[i].UF
+//             },
+//             {
+//                 headers: {
+//                     contenType: 'application/json'
+//                 }
+//             })
+
+//             .then(function (response) {
+
+//                 if (response.status === 201) {
+
+//                     console.log('Empresa Incluída com Sucesso')
+
+//                 } else {
+//                     console.log('Erro ao Incluir Empresa')
+//                 }
+
+//             })
+//             .catch(function (error) {
+//                 console.log('Falha no Processo:', error)
+
+//             })
+
+//     }
+
+// }
+
 export async function job_sinc_empresas() {
 
     console.log('Iniciando Sincronização Agendada de Empresas')
@@ -56,48 +107,45 @@ export async function job_sinc_empresas() {
 
     console.log('Total de Empresas para Sincronizar: ' + listaSincronizar.length)
 
-    for (let i = 0; i < listaSincronizar.length; i++) {
-
+    const tamanhoGrupo = 500
+    for (let i = 0; i < listaSincronizar.length; i += tamanhoGrupo) {
+        const grupo = listaSincronizar.slice(i, i + tamanhoGrupo)
+        const empresas = grupo.map((empresa: any) => {
+            return {
+                id: empresas.CODIGOEMPRESA,
+                nome: empresas.FANTASIA,
+                razao: empresas.RAZAO,
+                cnpj: empresas.CNPJ,
+                empresa: empresas.QUESTOR_EMPRESA,
+                estabelecimento: empresas.QUESTOR_ESTABELECIMENTO,
+                datacad: empresas.DATA_CAD,
+                endereco: empresas.TIPO + ' ' + empresas.ENDERECO,
+                numero: empresas.NUMERO,
+                bairro: empresas.BAIRRO,
+                cidade: empresas.CIDADE,
+                uf: empresas.UF
+            }
+        })
         axios.post('https://api.aws.inf.br/connect/questor/empresas/incluir',
-            {
-                id: listaSincronizar[i].CODIGOEMPRESA,
-                nome: listaSincronizar[i].FANTASIA,
-                razao: listaSincronizar[i].RAZAO,
-                cnpj: listaSincronizar[i].CNPJ,
-                empresa: listaSincronizar[i].QUESTOR_EMPRESA,
-                estabelecimento: listaSincronizar[i].QUESTOR_ESTABELECIMENTO,
-                datacad: listaSincronizar[i].DATA_CAD,
-                endereco: listaSincronizar[i].TIPO + ' ' + listaSincronizar[i].ENDERECO,
-                numero: listaSincronizar[i].NUMERO,
-                bairro: listaSincronizar[i].BAIRRO,
-                cidade: listaSincronizar[i].CIDADE,
-                uf: listaSincronizar[i].UF
-            },
+            empresas,
             {
                 headers: {
                     contenType: 'application/json'
                 }
             })
-
             .then(function (response) {
-
                 if (response.status === 201) {
-
-                    console.log('Empresa Incluída com Sucesso')
-
+                    console.log('Empresas Incluídas com Sucesso')
                 } else {
-                    console.log('Erro ao Incluir Empresa')
+                    console.log('Erro ao Incluir Empresas')
                 }
-
             })
             .catch(function (error) {
                 console.log('Falha no Processo:', error)
-
             })
-
     }
-
 }
+
 export async function job_sinc_contas_banco_ctb() {
 
     console.log('Iniciando Sincronização Agendada de Contas Contábeis Bancárias')
