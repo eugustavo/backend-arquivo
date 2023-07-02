@@ -4,7 +4,7 @@ import { options } from '../../../lib/firebird'
 export function query_sinc_funcionarios() {
 
 
-  const sql = `SELECT FIRST 150 CODIGOEMPRESA, CODIGOESTAB, CODIGOFUNCCONTR, CODIGOFUNCPESSOA, CPFFUNC, cast(NOMEFUNC as varchar(120) character set win1252) as NOMEFUNC FROM SIGRA_SINC_FUNC`
+  const sql = `SELECT CODIGOEMPRESA, CODIGOESTAB, CODIGOFUNCCONTR, CODIGOFUNCPESSOA, CPFFUNC, cast(NOMEFUNC as varchar(120) character set win1252) as NOMEFUNC FROM SIGRA_SINC_FUNC`
 
   console.log(sql)
 

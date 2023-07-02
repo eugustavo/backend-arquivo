@@ -12,7 +12,7 @@ export async function job_sinc_funcionarios() {
 
     console.log('Total de Funcionários para Sincronizar: ' + listaSincronizar.length)
 
-    const tamanhoGrupo = 50
+    const tamanhoGrupo = 500
     for (let i = 0; i < listaSincronizar.length; i += tamanhoGrupo) {
         const grupo = listaSincronizar.slice(i, i + tamanhoGrupo)
         const funcionarios = grupo.map((funcionario: any) => {
