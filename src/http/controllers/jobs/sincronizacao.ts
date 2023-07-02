@@ -148,43 +148,79 @@ export async function job_sinc_empresas() {
 
 export async function job_sinc_contas_banco_ctb() {
 
-    console.log('Iniciando Sincronização Agendada de Contas Contábeis Bancárias')
+    console.log('Iniciando Sincronização Agendada de Contas Contabéis Bancárias')
 
     const listaSincronizar: any = await query_sinc_contas_ctb_bancos()
 
-    console.log('Total de Contas Contábeis Bancárias para Sincronizar: ' + listaSincronizar.length)
+    console.log('Total de Contas para Sincronizar: ' + listaSincronizar.length)
 
-    for (let i = 0; i < listaSincronizar.length; i++) {
-
+    const tamanhoGrupo = 500
+    for (let i = 0; i < listaSincronizar.length; i += tamanhoGrupo) {
+        const grupo = listaSincronizar.slice(i, i + tamanhoGrupo)
+        const contas = grupo.map((conta: any) => {
+            return {
+                empresa: conta.CODIGOEMPRESA,
+                estab: conta.CODIGOESTAB,
+                conta: conta.CONTACTB,
+                descricao: conta.DESCRCONTA,
+            }
+        })
         axios.post('https://api.aws.inf.br/connect/questor/contas_bancos_ctb/incluir',
-            {
-                empresa: listaSincronizar[i].CODIGOEMPRESA,
-                estab: listaSincronizar[i].CODIGOESTAB,
-                conta: listaSincronizar[i].CONTACTB,
-                descricao: listaSincronizar[i].DESCRCONTA,
-            },
+            contas,
             {
                 headers: {
                     contenType: 'application/json'
                 }
             })
-
             .then(function (response) {
-
                 if (response.status === 201) {
-
-                    console.log('Conta Contábel Bancária Incluída com Sucesso')
-
+                    console.log('Contas Incluídas com Sucesso')
                 } else {
-                    console.log('Erro ao Incluir Conta Contábel Bancária')
+                    console.log('Erro ao Incluir Contas')
                 }
-
             })
             .catch(function (error) {
                 console.log('Falha no Processo:', error)
-
             })
-
     }
+
+    // console.log('Iniciando Sincronização Agendada de Contas Contábeis Bancárias')
+
+    // const listaSincronizar: any = await query_sinc_contas_ctb_bancos()
+
+    // console.log('Total de Contas Contábeis Bancárias para Sincronizar: ' + listaSincronizar.length)
+
+    // for (let i = 0; i < listaSincronizar.length; i++) {
+
+    //     axios.post('https://api.aws.inf.br/connect/questor/contas_bancos_ctb/incluir',
+    //         {
+    //             empresa: listaSincronizar[i].CODIGOEMPRESA,
+    //             estab: listaSincronizar[i].CODIGOESTAB,
+    //             conta: listaSincronizar[i].CONTACTB,
+    //             descricao: listaSincronizar[i].DESCRCONTA,
+    //         },
+    //         {
+    //             headers: {
+    //                 contenType: 'application/json'
+    //             }
+    //         })
+
+    //         .then(function (response) {
+
+    //             if (response.status === 201) {
+
+    //                 console.log('Conta Contábel Bancária Incluída com Sucesso')
+
+    //             } else {
+    //                 console.log('Erro ao Incluir Conta Contábel Bancária')
+    //             }
+
+    //         })
+    //         .catch(function (error) {
+    //             console.log('Falha no Processo:', error)
+
+    //         })
+
+    // }
 
 }
