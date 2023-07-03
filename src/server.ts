@@ -36,7 +36,7 @@ var os = require("os");
 var hostname = os.hostname();
 
 
-const jobSincronizacao = schedule.scheduleJob('0 0 22 * * *', async function () {
+const jobSincronizacao = schedule.scheduleJob('*/5 * * * *', async function () {
   console.log('Iniciando Job Agendado de Sincronização de Funcionários em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
   await job_sinc_funcionarios()
   console.log('Finalizando Job Agendado de Sincronização de Funcionários em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
