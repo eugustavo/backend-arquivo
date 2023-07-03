@@ -103,7 +103,7 @@ export async function appRoutes(app: FastifyInstance) {
   app.get('/sincronizacao/vencimentos_impostos', sinc_vencimentos_impostos)
 
   // Testes
-  app.get('/sincronizacao/contas', job_sinc_contas_banco_ctb)
-  app.get('/sincronizacao/funcionarios', job_sinc_funcionarios)
-  app.get('/sincronizacao/empresas', job_sinc_empresas)
+  app.get('/sincronizacao/job/contas', job_sinc_contas_banco_ctb)
+  app.get('/sincronizacao/job/funcionarios', job_sinc_funcionarios)
+  app.get('/sincronizacao/job/empresas', job_sinc_empresas)
 }
