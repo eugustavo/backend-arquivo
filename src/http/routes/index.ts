@@ -41,6 +41,8 @@ import { sinc_empresas } from '../controllers/sincronizacao/empresas'
 import { cmi_simples_nacional_debito } from '../controllers/cmi/simples_nacional/debito'
 
 import { job_sinc_contas_banco_ctb, job_sinc_empresas, job_sinc_funcionarios } from '../controllers/jobs/sincronizacao'
+import { cmi_icms_1449_apuracao } from '../controllers/cmi/icms_1449/apuracao'
+import { cmi_icms_1449_debito } from '../controllers/cmi/icms_1449/debito'
 
 
 var os = require("os");
@@ -84,6 +86,8 @@ export async function appRoutes(app: FastifyInstance) {
 
   // Controles Mensais de Impostos - ICMS 1449
   app.post('/auditor_fiscal/cmi/icms_1449/empresas', cmi_icms_1449_empresas)
+  app.post('/auditor_fiscal/cmi/icms_1449/apuracao', cmi_icms_1449_apuracao)
+  app.post('/auditor_fiscal/cmi/icms_1449/debito', cmi_icms_1449_debito)
 
   // Extrato Bancário
   app.post('/questor/bancos/extrato/incluir', extrato_insert)
