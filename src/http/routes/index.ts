@@ -44,6 +44,10 @@ import { job_sinc_contas_banco_ctb, job_sinc_empresas, job_sinc_funcionarios } f
 import { cmi_icms_1449_apuracao } from '../controllers/cmi/icms_1449/apuracao'
 import { cmi_icms_1449_debito } from '../controllers/cmi/icms_1449/debito'
 
+import { cmi_pis_cofins_apuracao } from '../controllers/cmi/pis_cofins/apuracao'
+import { cmi_pis_cofins_debito } from '../controllers/cmi/pis_cofins/debito'
+import { cmi_pis_cofins_empresas } from '../controllers/cmi/pis_cofins/empresas'
+
 
 var os = require("os");
 var hostname = os.hostname();
@@ -88,6 +92,11 @@ export async function appRoutes(app: FastifyInstance) {
   app.post('/auditor_fiscal/cmi/icms_1449/empresas', cmi_icms_1449_empresas)
   app.post('/auditor_fiscal/cmi/icms_1449/apuracao', cmi_icms_1449_apuracao)
   app.post('/auditor_fiscal/cmi/icms_1449/debito', cmi_icms_1449_debito)
+
+  // Controles Mensais de Impostos - PIS COFINS
+  app.post('/auditor_fiscal/cmi/pis_cofins/empresas', cmi_pis_cofins_empresas)
+  app.post('/auditor_fiscal/cmi/pis_cofins/apuracao', cmi_pis_cofins_apuracao)
+  app.post('/auditor_fiscal/cmi/pis_cofins/debito', cmi_pis_cofins_debito)
 
   // Extrato Bancário
   app.post('/questor/bancos/extrato/incluir', extrato_insert)
