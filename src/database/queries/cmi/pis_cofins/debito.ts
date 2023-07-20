@@ -19,7 +19,7 @@ export function Query_CMI_Pis_Cofins_Debito(data1: any) {
     DEBITOFEDERAL b left join IMPOSTO c on (b.CODIGOIMPOSTO = c.CODIGOIMPOSTO and b.VARIACAOIMPOSTO = c.VARIACAOIMPOSTO)
     left join usuario d on (b.CODIGOUSUARIO = d.CODIGOUSUARIO)
     left join estab e on (B.CODIGOEMPRESA = e.CODIGOEMPRESA and B.CODIGOESTAB = e.CODIGOESTAB)
-    where  b.DATALCTOCTR = ? and c.CODIGOGRUPOIMPOSTO in ( '1.06' , '1.07') and b.CODIGOIMPOSTO not in (8301)`
+    where  b.DATALCTOCTR = '${data1}' and c.CODIGOGRUPOIMPOSTO in ( '1.06' , '1.07') and b.CODIGOIMPOSTO not in (8301)`
 
     console.log(sql)
 
