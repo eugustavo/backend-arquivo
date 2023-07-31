@@ -35,6 +35,7 @@ import { sinc_funcionarios } from '../controllers/sincronizacao/funcionarios'
 import { sinc_operadores } from '../controllers/sincronizacao/operadores'
 import { sinc_contas_ctb_bancos } from '../controllers/sincronizacao/contas_ctb_bancos'
 import { sinc_vencimentos_impostos } from '../controllers/sincronizacao/vencimentos_impostos'
+import { sat_55_emitidas } from '../controllers/sincronizacao/sat_55_emitidas'
 
 import { extrato_insert } from '../controllers/lancamentos_bancarios/integrar_extrato'
 import { sinc_empresas } from '../controllers/sincronizacao/empresas'
@@ -114,6 +115,9 @@ export async function appRoutes(app: FastifyInstance) {
   app.get('/sincronizacao/empresas', sinc_empresas)
   app.get('/sincronizacao/contas_ctb_bancos', sinc_contas_ctb_bancos)
   app.get('/sincronizacao/vencimentos_impostos', sinc_vencimentos_impostos)
+
+  // SAT
+  app.get('/sincronizacao/sat/55_emitidas', sat_55_emitidas)
 
   // Testes
   app.get('/sincronizacao/job/contas', job_sinc_contas_banco_ctb)
