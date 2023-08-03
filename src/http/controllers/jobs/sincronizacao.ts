@@ -277,7 +277,7 @@ export async function job_sat_grava_questor() {
                             , MEIOPAGAMENTO, CDSITUACAO, CODIGOUSUARIO, DATAHORALCTOFIS, ORIGEMDADO, ACRESCIMOFINANCEIRO, CONCILIADA, CANCELADA )
                             VALUES ('9999', null, '1', '1', '${numeronf}', '${numeronf}', 'NFE', '${serienf}', '${dataemissao}', '${valorTotalNota}',
                             '${ipi}', '${valortotalicms}','${totalicmsst}','0','${operacao}','${ieemitente}','55','55','${chaveacessoformatado}','P','0','0','1',
-                            '${situacao}','2420','${moment().format('YYYY-MM-DD HH:mm:ss')}', '3' 0,0,0)
+                            '${situacao}','2420','${moment().format('YYYY-MM-DD HH:mm:ss')}', '3', 0,0,0)
                        `
 
                     return new Promise((resolve, reject) => {
