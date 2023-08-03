@@ -41,7 +41,7 @@ import { extrato_insert } from '../controllers/lancamentos_bancarios/integrar_ex
 import { sinc_empresas } from '../controllers/sincronizacao/empresas'
 import { cmi_simples_nacional_debito } from '../controllers/cmi/simples_nacional/debito'
 
-import { job_sinc_contas_banco_ctb, job_sinc_empresas, job_sinc_funcionarios } from '../controllers/jobs/sincronizacao'
+import { job_sat_grava_questor, job_sinc_contas_banco_ctb, job_sinc_empresas, job_sinc_funcionarios } from '../controllers/jobs/sincronizacao'
 import { cmi_icms_1449_apuracao } from '../controllers/cmi/icms_1449/apuracao'
 import { cmi_icms_1449_debito } from '../controllers/cmi/icms_1449/debito'
 
@@ -123,4 +123,5 @@ export async function appRoutes(app: FastifyInstance) {
   app.get('/sincronizacao/job/contas', job_sinc_contas_banco_ctb)
   app.get('/sincronizacao/job/funcionarios', job_sinc_funcionarios)
   app.get('/sincronizacao/job/empresas', job_sinc_empresas)
+  app.get('/sincronizacao/job/sat', job_sat_grava_questor)
 }

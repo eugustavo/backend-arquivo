@@ -1,0 +1,9 @@
+Data/Hora: 2023-08-03T20:48:07.096Z
+Erro: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at __node_internal_captureLargerStackTrace (node:internal/errors:478:5)
+    at __node_internal_uvExceptionWithHostPort (node:internal/errors:577:12)
+    at Server.setupListenHandle [as _listen2] (node:net:1463:16)
+    at listenInCluster (node:net:1511:12)
+    at doListen (node:net:1660:7)
+    at processTicksAndRejections (node:internal/process/task_queues:84:21)
+

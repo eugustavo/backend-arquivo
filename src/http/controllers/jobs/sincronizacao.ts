@@ -1,8 +1,18 @@
 import axios from 'axios'
-
+import moment from 'moment';
 import { query_sinc_funcionarios } from '@/database/queries/sincronizacao/sinc_funcionarios'
 import { query_sinc_empresas } from '@/database/queries/sincronizacao/sinc_empresas'
 import { query_sinc_contas_ctb_bancos } from '@/database/queries/sincronizacao/sinc_contas_ctb_bancos'
+
+import firebird from 'node-firebird'
+import { options } from '../../../lib/firebird'
+
+function ConverteDataBrToDate(data: any) {
+    const mes = data.substring(3, 5)
+    const dia = data.substring(0, 2)
+    const ano = data.substring(6, 10)
+    return ano + '-' + mes + '-' + dia
+}
 
 export async function job_sinc_funcionarios() {
 
@@ -222,5 +232,95 @@ export async function job_sinc_contas_banco_ctb() {
     //         })
 
     // }
+
+}
+export async function job_sat_grava_questor() {
+
+    console.log('Iniciando Sincronização SAT AWS QUESTOR')
+
+    axios.post('https://api.aws.inf.br/connect/sat/listar',
+        {
+            tabela: 'sat_dfe_consulta_nfe',
+            p1: '2023-07-01',
+            p2: '2023-07-31'
+        },
+        {
+            headers: {
+                contenType: 'application/json'
+            }
+        })
+        .then(function (response) {
+            if (response.status == 200) {
+
+                // for (let i = 0; i < response.data.length; i++) {
+                for (let i = 0; i < 2; i++) {
+
+                    // console.log(response.data[i])
+                    const numeronf = response.data[i].numerodocumento
+                    const serienf = response.data[i].seriedocumento
+                    const dataemissao = ConverteDataBrToDate(response.data[i].dataemissao)
+                    const valorTotalNota = response.data[i].valortotalnota.replace(',', '.')
+                    const ipi = response.data[i].ipi
+                    const valortotalicms = response.data[i].valortotalicms.replace(',', '.')
+                    const totalicmsst = response.data[i].totalicmsst.replace(',', '.')
+                    const ieemitente = response.data[i].ieemitente
+                    const chaveacessoformatado = response.data[i].chaveacessoformatado
+
+                    const operacao = response.data[i].operacao == 'S' ? '1' : '0'
+                    const situacao = response.data[i].situacao == 'Autorizada' ? '0' : '2'
+
+
+                    const sql = `INSERT INTO LCTOFISSAI
+                            (CODIGOEMPRESA, CHAVELCTOFISSAI, CODIGOESTAB, CODIGOPESSOA, NUMERONF, NUMERONFFINAL, ESPECIENF, SERIENF, DATALCTOFIS
+                            , VALORCONTABIL, BASECALCULOIPI, VALORIPI, ISENTASIPI, OUTRASIPI, CONTRIBUINTE, COMPLHIST
+                            , CODIGOTIPODCTOSINTEGRA, CDMODELO, CHAVENFESAI, EMITENTENF, FINALIDADEOPERACAO, INDPAGTO
+                            , MEIOPAGAMENTO, CDSITUACAO, CODIGOUSUARIO, DATAHORALCTOFIS, ORIGEMDADO, ACRESCIMOFINANCEIRO, CONCILIADA, CANCELADA )
+                            VALUES ('9999', null, '1', '1', '${numeronf}', '${numeronf}', 'NFE', '${serienf}', '${dataemissao}', '${valorTotalNota}',
+                            '${ipi}', '${valortotalicms}','${totalicmsst}','0','${operacao}','${ieemitente}','55','55','${chaveacessoformatado}','P','0','0','1',
+                            '${situacao}','2420','${moment().format('YYYY-MM-DD HH:mm:ss')}', '3' 0,0,0);
+                       `
+
+                    return new Promise((resolve, reject) => {
+                        console.log('Chegou na Promise')
+                        firebird.attach(options, function (err: any, db: any): any {
+                            console.log('Chegou no Attach')
+                            if (err) {
+                                console.log('Chegou no Erro do Attach')
+                                console.error('Erro na Conexão: ', err)
+                                reject(err)
+                            }
+                            console.log('Chegou antes do DbQuery')
+                            db.query(sql, function (err: any, result: any): any {
+                                console.log('Chegou no DbQuery')
+                                if (err) {
+                                    console.error('Erro na Query: ', err)
+                                    reject(err)
+                                } else {
+                                    console.log('Chegou no Else do DbQuery')
+                                    resolve(result)
+                                }
+                                db.detach()
+                            })
+                        })
+                    })
+
+                }
+
+
+
+
+
+
+
+            } else {
+
+                console.log('Erro ao Baixar SAT')
+
+            }
+        })
+        .catch(function (error) {
+            console.log('Falha no Processo:', error)
+        })
+
 
 }
