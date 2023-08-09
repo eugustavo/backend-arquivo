@@ -247,7 +247,7 @@ export async function job_sat_grava_questor() {
                 contenType: 'application/json'
             }
         })
-        .then( async function (response) {
+        .then(async function (response) {
             if (response.status == 200) {
 
                 for (let i = 0; i < response.data.length; i++) {
@@ -271,7 +271,16 @@ export async function job_sat_grava_questor() {
                         const operacao = response.data[i].operacao == 'S' ? '1' : '0'
                         const situacao = response.data[i].situacao == 'Autorizada' ? '0' : '2'
 
-                        const sql = `INSERT INTO LCTOFISSAI
+                        const recordExists: boolean = await checkIfRecordExists(chaveacessoformatado);
+
+                        if (recordExists) {
+
+                            await updateSituacao(chaveacessoformatado, situacao);
+                            console.log(`Registro com chave ${chaveacessoformatado} já existe. Situação atualizada.`);
+
+                        } else {
+
+                            const sql = `INSERT INTO LCTOFISSAI
                             (CODIGOEMPRESA, CHAVELCTOFISSAI, CODIGOESTAB, CODIGOPESSOA, NUMERONF, NUMERONFFINAL, ESPECIENF, SERIENF, DATALCTOFIS
                             , VALORCONTABIL, BASECALCULOIPI, VALORIPI, ISENTASIPI, OUTRASIPI, CONTRIBUINTE, COMPLHIST
                             , CODIGOTIPODCTOSINTEGRA, CDMODELO, CHAVENFESAI, EMITENTENF, FINALIDADEOPERACAO, INDPAGTO
@@ -279,39 +288,38 @@ export async function job_sat_grava_questor() {
                             VALUES ('9999', null, '1', '1', '${numeronf}', '${numeronf}', 'NFE', '${serienf}', '${dataemissao}', '${valorTotalNota}',
                             '${ipi}', '${valortotalicms}','${totalicmsst}','0','${operacao}','${ieemitente}','55','55','${chaveacessoformatado}','P','0','0','1',
                             '${situacao}','2420','${moment().format('YYYY-MM-DD HH:mm:ss')}', '3', 0,0,0)
-                       `
+                            `
 
-                        const result = await new Promise((resolve, reject) => {
-                            firebird.attach(options, function (err: any, db: any) {
-                                if (err) {
-                                    console.error('Erro na Conexão: ', err);
-                                    reject(err);
-                                    return;
-                                }
-                                db.query(sql, function (err: any, result: any) {
-                                    if (err) {
-                                        console.error('Erro na Query: ', err);
-                                        reject(err);
-                                    } else {
-                                        resolve(result);
-                                    }
-                                    db.detach();
-                                });
-                            });
-                        });
+                            const insertSuccess: boolean = await executeQuery(sql);
+                            if (insertSuccess) {
+                                axios.post('https://api.aws.inf.br/connect/sat/questor',
+                                    {
+                                        chaveacessoformatado: chaveacessoformatado
+                                    },
+                                    {
+                                        headers: {
+                                            contenType: 'application/json'
+                                        }
+                                    })
+                                    .then(function (response) {
+                                        console.log(response.data)
+                                    })
+                                    .catch(function (error) {
+                                        console.log('Falha no Processo:', error)
+                                    })
+
+                                console.log(`Novo registro inserido com chave ${chaveacessoformatado}.`);
+                            } else {
+                                console.log(`Erro ao inserir novo registro com chave ${chaveacessoformatado}.`);
+                            }
+                        }
+
                     } catch (error) {
                         console.log('Erro ao Inserir SAT: ', error)
                     }
-
-
-
                 }
-
-
             } else {
-
                 console.log('Erro ao Baixar SAT')
-
             }
         })
         .catch(function (error) {
@@ -319,4 +327,65 @@ export async function job_sat_grava_questor() {
         })
 
 
+}
+
+async function checkIfRecordExists(chaveacessoformatado: string): Promise<boolean> {
+    const query: string = `SELECT COUNT(*) AS recordCount FROM LCTOFISSAI WHERE CHAVENFESAI = '${chaveacessoformatado}'`;
+
+    try {
+        const result: any[] = await executeQueryWithResult(query);
+        return result[0].recordCount > 0; // Corrected property name
+    } catch (error) {
+        console.error('Erro ao verificar existência do registro: ', error);
+        return false; // An error occurred, treat as if record doesn't exist
+    }
+}
+
+
+
+async function updateSituacao(chaveacessoformatado: string, situacao: string): Promise<void> {
+    const updateQuery: string = `UPDATE LCTOFISSAI SET CDSITUACAO = '${situacao}' WHERE CHAVENFESAI = '${chaveacessoformatado}'`;
+
+    await executeQuery(updateQuery);
+}
+
+async function executeQuery(query: string): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+        firebird.attach(options, function (err: any, db: any) {
+            if (err) {
+                console.error('Erro na Conexão: ', err);
+                reject(err);
+                return;
+            }
+            db.query(query, function (err: any, result: any[]) {
+                if (err) {
+                    console.error('Erro na Query: ', err);
+                    reject(err);
+                } else {
+                    resolve(true); // Query executed successfully
+                }
+                db.detach();
+            });
+        });
+    });
+}
+async function executeQueryWithResult(query: string): Promise<any[]> {
+    return new Promise<any[]>((resolve, reject) => {
+        firebird.attach(options, function (err: any, db: any) {
+            if (err) {
+                console.error('Erro na Conexão: ', err);
+                reject(err);
+                return;
+            }
+            db.query(query, function (err: any, result: any[]) {
+                if (err) {
+                    console.error('Erro na Query: ', err);
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+                db.detach();
+            });
+        });
+    });
 }
