@@ -330,7 +330,7 @@ export async function job_sat_grava_questor() {
 }
 
 async function checkIfRecordExists(chaveacessoformatado: string): Promise<boolean> {
-    const query: string = `SELECT COUNT(*) AS recordCount FROM LCTOFISSAI WHERE CHAVENFESAI = '${chaveacessoformatado}'`;
+    const query: string = `SELECT COUNT(*) AS recordCount FROM LCTOFISSAI WHERE CHAVENFESAI = '${chaveacessoformatado}' AND CODIGOEMPRESA = '9999'`;
 
     try {
         const result: any[] = await executeQueryWithResult(query);
@@ -344,7 +344,7 @@ async function checkIfRecordExists(chaveacessoformatado: string): Promise<boolea
 
 
 async function updateSituacao(chaveacessoformatado: string, situacao: string): Promise<void> {
-    const updateQuery: string = `UPDATE LCTOFISSAI SET CDSITUACAO = '${situacao}' WHERE CHAVENFESAI = '${chaveacessoformatado}'`;
+    const updateQuery: string = `UPDATE LCTOFISSAI SET CDSITUACAO = '${situacao}' WHERE CHAVENFESAI = '${chaveacessoformatado}'  AND CODIGOEMPRESA = '9999'`;
 
     await executeQuery(updateQuery);
 }
