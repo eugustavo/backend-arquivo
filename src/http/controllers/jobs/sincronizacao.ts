@@ -240,9 +240,7 @@ export async function job_sat_grava_questor() {
 
     axios.post('https://api.aws.inf.br/connect/sat/listar',
         {
-            tabela: 'sat_dfe_consulta_nfe',
-            p1: '2023-08-01',
-            p2: '2023-08-31'
+            tabela: 'sat_dfe_consulta_nfe'
         },
         {
             headers: {
