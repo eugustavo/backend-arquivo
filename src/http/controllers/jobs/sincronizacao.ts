@@ -255,7 +255,11 @@ export async function job_sat_grava_questor() {
                 for (let i = 0; i < response.data.length; i++) {
                 // for (let i = 0; i < 2; i++) {
 
-                    // console.log(response.data[i])
+                try {
+
+                    console.log('Iniciando Sincronização SAT AWS QUESTOR Chave: ' + response.data[i].chaveacessoformatado)
+                    console.log(response.data[i])
+
                     const numeronf = response.data[i].numerodocumento
                     const serienf = response.data[i].seriedocumento
                     const dataemissao = ConverteDataBrToDate(response.data[i].dataemissao)
@@ -302,13 +306,13 @@ export async function job_sat_grava_questor() {
                             })
                         })
                     })
-
+                } catch (error) {
+                    console.log('Erro ao Inserir SAT: ', error)
                 }
 
+                    
 
-
-
-
+                }
 
 
             } else {
