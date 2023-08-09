@@ -241,8 +241,8 @@ export async function job_sat_grava_questor() {
     axios.post('https://api.aws.inf.br/connect/sat/listar',
         {
             tabela: 'sat_dfe_consulta_nfe',
-            p1: '2023-07-01',
-            p2: '2023-07-31'
+            p1: '2023-08-01',
+            p2: '2023-08-31'
         },
         {
             headers: {
@@ -252,8 +252,8 @@ export async function job_sat_grava_questor() {
         .then(function (response) {
             if (response.status == 200) {
 
-                // for (let i = 0; i < response.data.length; i++) {
-                for (let i = 0; i < 2; i++) {
+                for (let i = 0; i < response.data.length; i++) {
+                // for (let i = 0; i < 2; i++) {
 
                     // console.log(response.data[i])
                     const numeronf = response.data[i].numerodocumento
@@ -268,7 +268,6 @@ export async function job_sat_grava_questor() {
 
                     const operacao = response.data[i].operacao == 'S' ? '1' : '0'
                     const situacao = response.data[i].situacao == 'Autorizada' ? '0' : '2'
-
 
                     const sql = `INSERT INTO LCTOFISSAI
                             (CODIGOEMPRESA, CHAVELCTOFISSAI, CODIGOESTAB, CODIGOPESSOA, NUMERONF, NUMERONFFINAL, ESPECIENF, SERIENF, DATALCTOFIS
