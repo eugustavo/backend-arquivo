@@ -249,31 +249,31 @@ export async function job_sat_grava_questor() {
                 contenType: 'application/json'
             }
         })
-        .then(function (response) {
+        .then( async function (response) {
             if (response.status == 200) {
 
                 for (let i = 0; i < response.data.length; i++) {
-                // for (let i = 0; i < 2; i++) {
+                    // for (let i = 0; i < 2; i++) {
 
-                try {
+                    try {
 
-                    console.log('Iniciando Sincronização SAT AWS QUESTOR Chave: ' + response.data[i].chaveacessoformatado)
-                    console.log(response.data[i])
+                        console.log('Iniciando Sincronização SAT AWS QUESTOR Chave: ' + response.data[i].chaveacessoformatado)
+                        console.log(response.data[i])
 
-                    const numeronf = response.data[i].numerodocumento
-                    const serienf = response.data[i].seriedocumento
-                    const dataemissao = ConverteDataBrToDate(response.data[i].dataemissao)
-                    const valorTotalNota = response.data[i].valortotalnota.replace(',', '.')
-                    const ipi = response.data[i].ipi
-                    const valortotalicms = response.data[i].valortotalicms.replace(',', '.')
-                    const totalicmsst = response.data[i].totalicmsst.replace(',', '.')
-                    const ieemitente = response.data[i].ieemitente
-                    const chaveacessoformatado = response.data[i].chaveacessoformatado
+                        const numeronf = response.data[i].numerodocumento
+                        const serienf = response.data[i].seriedocumento
+                        const dataemissao = ConverteDataBrToDate(response.data[i].dataemissao)
+                        const valorTotalNota = response.data[i].valortotalnota.replace(',', '.')
+                        const ipi = response.data[i].ipi
+                        const valortotalicms = response.data[i].valortotalicms.replace(',', '.')
+                        const totalicmsst = response.data[i].totalicmsst.replace(',', '.')
+                        const ieemitente = response.data[i].ieemitente
+                        const chaveacessoformatado = response.data[i].chaveacessoformatado
 
-                    const operacao = response.data[i].operacao == 'S' ? '1' : '0'
-                    const situacao = response.data[i].situacao == 'Autorizada' ? '0' : '2'
+                        const operacao = response.data[i].operacao == 'S' ? '1' : '0'
+                        const situacao = response.data[i].situacao == 'Autorizada' ? '0' : '2'
 
-                    const sql = `INSERT INTO LCTOFISSAI
+                        const sql = `INSERT INTO LCTOFISSAI
                             (CODIGOEMPRESA, CHAVELCTOFISSAI, CODIGOESTAB, CODIGOPESSOA, NUMERONF, NUMERONFFINAL, ESPECIENF, SERIENF, DATALCTOFIS
                             , VALORCONTABIL, BASECALCULOIPI, VALORIPI, ISENTASIPI, OUTRASIPI, CONTRIBUINTE, COMPLHIST
                             , CODIGOTIPODCTOSINTEGRA, CDMODELO, CHAVENFESAI, EMITENTENF, FINALIDADEOPERACAO, INDPAGTO
@@ -283,34 +283,29 @@ export async function job_sat_grava_questor() {
                             '${situacao}','2420','${moment().format('YYYY-MM-DD HH:mm:ss')}', '3', 0,0,0)
                        `
 
-                    return new Promise((resolve, reject) => {
-                        console.log('Chegou na Promise')
-                        firebird.attach(options, function (err: any, db: any): any {
-                            console.log('Chegou no Attach')
-                            if (err) {
-                                console.log('Chegou no Erro do Attach')
-                                console.error('Erro na Conexão: ', err)
-                                reject(err)
-                            }
-                            console.log('Chegou antes do DbQuery')
-                            db.query(sql, function (err: any, result: any): any {
-                                console.log('Chegou no DbQuery')
+                        const result = await new Promise((resolve, reject) => {
+                            firebird.attach(options, function (err: any, db: any) {
                                 if (err) {
-                                    console.error('Erro na Query: ', err)
-                                    reject(err)
-                                } else {
-                                    console.log('Chegou no Else do DbQuery')
-                                    resolve(result)
+                                    console.error('Erro na Conexão: ', err);
+                                    reject(err);
+                                    return;
                                 }
-                                db.detach()
-                            })
-                        })
-                    })
-                } catch (error) {
-                    console.log('Erro ao Inserir SAT: ', error)
-                }
+                                db.query(sql, function (err: any, result: any) {
+                                    if (err) {
+                                        console.error('Erro na Query: ', err);
+                                        reject(err);
+                                    } else {
+                                        resolve(result);
+                                    }
+                                    db.detach();
+                                });
+                            });
+                        });
+                    } catch (error) {
+                        console.log('Erro ao Inserir SAT: ', error)
+                    }
 
-                    
+
 
                 }
 
