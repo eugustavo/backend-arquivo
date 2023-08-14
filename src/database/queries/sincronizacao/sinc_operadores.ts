@@ -8,9 +8,9 @@ export function query_sinc_operadores() {
   select 
 a.codigousuario,
 cast(a.nomeusuario as varchar(120) character set win1252) as nomeusuario,
-cast(a.emailusuario as varchar(120) character set win1252) as emailusuario,
+trim(cast(a.emailusuario as varchar(120) character set win1252)) as emailusuario,
 case when nivelusuario = 2 then 'admin' ELSE 'user' end as nivel,
-replace (replace (replace (replace (c.DESCRGRUPOUSUARIO,'DS - Cadastro de Empresas','DS'),'Financeiro','DA'),'Qualidade','DA'),'Administrador','ADM') DESCRGRUPOUSUARIO
+replace (replace (replace (replace (c.DESCRGRUPOUSUARIO,'DS - casdastro de empresas"','DS'),'Financeiro','DA'),'Qualidade','DA'),'Administrador','ADM') DESCRGRUPOUSUARIO
  from usuario a left join USUARIOGRUPOUSU b on (a.CODIGOUSUARIO = b.CODIGOUSUARIO)
  left join grupousuario c on (b.CODIGOGRUPOUSUARIO = c.CODIGOGRUPOUSUARIO)
   where b.CODIGOGRUPOUSUARIO in (4,7,10,22,509,516,1,517)
