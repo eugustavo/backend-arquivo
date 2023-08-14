@@ -4,7 +4,17 @@ import { options } from '../../../lib/firebird'
 export function query_sinc_operadores() {
 
 
-  const sql = `SELECT codigousuario, cast(nomeusuario as varchar(120) character set win1252) as nomeusuario, cast(emailusuario as varchar(120) character set win1252) as emailusuario, case when nivelusuario = 2 then 'admin' ELSE 'user' end as nivel FROM usuario WHERE databaixausuario IS NULL`
+  const sql = `
+  select 
+a.codigousuario,
+cast(a.nomeusuario as varchar(120) character set win1252) as nomeusuario,
+cast(a.emailusuario as varchar(120) character set win1252) as emailusuario,
+case when nivelusuario = 2 then 'admin' ELSE 'user' end as nivel,
+replace (replace (replace (replace (c.DESCRGRUPOUSUARIO,'DS - Cadastro de Empresas','DS'),'Financeiro','DA'),'Qualidade','DA'),'Administrador','ADM') DESCRGRUPOUSUARIO
+ from usuario a left join USUARIOGRUPOUSU b on (a.CODIGOUSUARIO = b.CODIGOUSUARIO)
+ left join grupousuario c on (b.CODIGOGRUPOUSUARIO = c.CODIGOGRUPOUSUARIO)
+  where b.CODIGOGRUPOUSUARIO in (4,7,10,22,509,516,1,517)
+  `
 
   console.log(sql)
 
