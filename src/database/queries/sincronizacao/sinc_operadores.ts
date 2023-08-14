@@ -15,8 +15,7 @@ FROM USUARIO a
 LEFT JOIN USUARIOGRUPOUSU b ON (a.CODIGOUSUARIO = b.CODIGOUSUARIO)
 LEFT JOIN GRUPOUSUARIO c ON (b.CODIGOGRUPOUSUARIO = c.CODIGOGRUPOUSUARIO)
 WHERE b.CODIGOGRUPOUSUARIO IN (4, 7, 10, 22, 509, 516, 1, 517)
-GROUP BY a.codigousuario, a.nomeusuario, a.emailusuario, nivel;
-
+GROUP BY a.codigousuario, a.nomeusuario, a.emailusuario, nivel
   `
 
   console.log(sql)
