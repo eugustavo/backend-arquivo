@@ -5,15 +5,18 @@ export function query_sinc_operadores() {
 
 
   const sql = `
-  select 
-a.codigousuario,
-cast(a.nomeusuario as varchar(120) character set win1252) as nomeusuario,
-cast(a.emailusuario as varchar(120) character set win1252) as emailusuario,
-case when nivelusuario = 2 then 'admin' ELSE 'user' end as nivel,
-replace (replace (replace (replace (c.DESCRGRUPOUSUARIO,'DS - casdastro de empresas','DS'),'Financeiro','DA'),'Qualidade','DA'),'Administrador','ADM') DESCRGRUPOUSUARIO
- from usuario a left join USUARIOGRUPOUSU b on (a.CODIGOUSUARIO = b.CODIGOUSUARIO)
- left join grupousuario c on (b.CODIGOGRUPOUSUARIO = c.CODIGOGRUPOUSUARIO)
-  where b.CODIGOGRUPOUSUARIO in (4,7,10,22,509,516,1,517)
+  SELECT 
+  a.codigousuario,
+  CAST(a.nomeusuario AS VARCHAR(120) CHARACTER SET WIN1252) AS nomeusuario,
+  CAST(a.emailusuario AS VARCHAR(120) CHARACTER SET WIN1252) AS emailusuario,
+  CASE WHEN nivelusuario = 2 THEN 'admin' ELSE 'user' END AS nivel,
+  LIST(c.DESCRGRUPOUSUARIO, ', ') AS DESCRGRUPOUSUARIO
+FROM USUARIO a
+LEFT JOIN USUARIOGRUPOUSU b ON (a.CODIGOUSUARIO = b.CODIGOUSUARIO)
+LEFT JOIN GRUPOUSUARIO c ON (b.CODIGOGRUPOUSUARIO = c.CODIGOGRUPOUSUARIO)
+WHERE b.CODIGOGRUPOUSUARIO IN (4, 7, 10, 22, 509, 516, 1, 517)
+GROUP BY a.codigousuario, a.nomeusuario, a.emailusuario, nivel;
+
   `
 
   console.log(sql)
