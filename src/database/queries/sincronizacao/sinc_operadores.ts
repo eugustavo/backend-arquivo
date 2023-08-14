@@ -10,12 +10,17 @@ export function query_sinc_operadores() {
   CAST(a.nomeusuario AS VARCHAR(120) CHARACTER SET WIN1252) AS nomeusuario,
   CAST(a.emailusuario AS VARCHAR(120) CHARACTER SET WIN1252) AS emailusuario,
   CASE WHEN nivelusuario = 2 THEN 'admin' ELSE 'user' END AS nivel,
-  LIST(c.DESCRGRUPOUSUARIO, ', ') AS DESCRGRUPOUSUARIO
-FROM USUARIO a
-LEFT JOIN USUARIOGRUPOUSU b ON (a.CODIGOUSUARIO = b.CODIGOUSUARIO)
-LEFT JOIN GRUPOUSUARIO c ON (b.CODIGOGRUPOUSUARIO = c.CODIGOGRUPOUSUARIO)
-WHERE b.CODIGOGRUPOUSUARIO IN (4, 7, 10, 22, 509, 516, 1, 517)
-GROUP BY a.codigousuario, a.nomeusuario, a.emailusuario, nivel
+  CAST(
+      LIST(
+          CAST(REPLACE(REPLACE(REPLACE(REPLACE(c.DESCRGRUPOUSUARIO, 'DS - Cadastro de Empresas', 'DS'), 'Financeiro', 'DA'), 'Qualidade', 'DA'), 'Administrador', 'ADM') AS VARCHAR(120) CHARACTER SET WIN1252),
+          ','
+      ) AS VARCHAR(120) CHARACTER SET WIN1252
+  ) AS DESCRGRUPOUSUARIO
+  FROM USUARIO a
+  LEFT JOIN USUARIOGRUPOUSU b ON (a.CODIGOUSUARIO = b.CODIGOUSUARIO)
+  LEFT JOIN GRUPOUSUARIO c ON (b.CODIGOGRUPOUSUARIO = c.CODIGOGRUPOUSUARIO)
+  WHERE b.CODIGOGRUPOUSUARIO IN (4, 7, 10, 22, 509, 516, 1, 517)
+  GROUP BY a.codigousuario, a.nomeusuario, a.emailusuario, nivel;
   `
 
   console.log(sql)
