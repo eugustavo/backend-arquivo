@@ -278,6 +278,23 @@ export async function job_sat_grava_questor() {
                             await updateSituacao(chaveacessoformatado, situacao);
                             console.log(`Registro com chave ${chaveacessoformatado} já existe. Situação atualizada.`);
 
+                            axios.post('https://api.aws.inf.br/connect/sat/questor',
+                                {
+                                    chaveacessoformatado: chaveacessoformatado,
+                                    status: 'ATUALIZADO'
+                                },
+                                {
+                                    headers: {
+                                        contenType: 'application/json'
+                                    }
+                                })
+                                .then(function (response) {
+                                    console.log(response.data)
+                                })
+                                .catch(function (error) {
+                                    console.log('Falha no Processo:', error)
+                                })
+
                         } else {
 
                             const sql = `INSERT INTO LCTOFISSAI
@@ -294,7 +311,8 @@ export async function job_sat_grava_questor() {
                             if (insertSuccess) {
                                 axios.post('https://api.aws.inf.br/connect/sat/questor',
                                     {
-                                        chaveacessoformatado: chaveacessoformatado
+                                        chaveacessoformatado: chaveacessoformatado,
+                                        status: 'INSERIDO'
                                     },
                                     {
                                         headers: {
@@ -311,6 +329,22 @@ export async function job_sat_grava_questor() {
                                 console.log(`Novo registro inserido com chave ${chaveacessoformatado}.`);
                             } else {
                                 console.log(`Erro ao inserir novo registro com chave ${chaveacessoformatado}.`);
+                                axios.post('https://api.aws.inf.br/connect/sat/questor',
+                                    {
+                                        chaveacessoformatado: chaveacessoformatado,
+                                        status: 'ERRO'
+                                    },
+                                    {
+                                        headers: {
+                                            contenType: 'application/json'
+                                        }
+                                    })
+                                    .then(function (response) {
+                                        console.log(response.data)
+                                    })
+                                    .catch(function (error) {
+                                        console.log('Falha no Processo:', error)
+                                    })
                             }
                         }
 
