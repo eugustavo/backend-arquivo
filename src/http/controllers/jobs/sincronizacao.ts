@@ -364,11 +364,11 @@ export async function job_sat_grava_questor() {
 }
 
 async function checkIfRecordExists(chaveacessoformatado: string): Promise<boolean> {
-    const query: string = `SELECT COUNT(*) AS recordCount FROM LCTOFISSAI WHERE CHAVENFESAI = '${chaveacessoformatado}' AND CODIGOEMPRESA = '9999'`;
+    const query: string = `SELECT COUNT(*) AS records FROM LCTOFISSAI WHERE CHAVENFESAI = '${chaveacessoformatado}' AND CODIGOEMPRESA = '9999'`;
 
     try {
         const result: any[] = await executeQueryWithResult(query);
-        return Number(result[0].recordCount) > 0; // Corrected property name
+        return Number(result[0].records) > 0; // Corrected property name
     } catch (error) {
         console.error('Erro ao verificar existência do registro: ', error);
         return false; // An error occurred, treat as if record doesn't exist
