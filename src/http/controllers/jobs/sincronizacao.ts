@@ -256,7 +256,7 @@ export async function job_sat_grava_questor() {
                     try {
 
                         console.log('Iniciando Sincronização SAT AWS QUESTOR Chave: ' + response.data[i].chaveacessoformatado)
-                        console.log(response.data[i])
+                        // console.log(response.data[i])
 
                         const numeronf = response.data[i].numerodocumento
                         const serienf = response.data[i].seriedocumento
