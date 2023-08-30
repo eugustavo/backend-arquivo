@@ -236,7 +236,7 @@ export async function job_sinc_contas_banco_ctb() {
 }
 export async function job_sat_grava_questor() {
 
-    console.log('Iniciando Sincronização SAT AWS QUESTOR')
+    console.log('Iniciando Processo de Sincronização SAT AWS QUESTOR')
 
     axios.post('https://api.aws.inf.br/connect/sat/listar',
         {
@@ -255,7 +255,7 @@ export async function job_sat_grava_questor() {
 
                     try {
 
-                        console.log('Iniciando Sincronização SAT AWS QUESTOR Chave: ' + response.data[i].chaveacessoformatado)
+                        console.log('Validando Chave: ' + response.data[i].chaveacessoformatado)
                         // console.log(response.data[i])
 
                         const numeronf = response.data[i].numerodocumento
@@ -272,6 +272,8 @@ export async function job_sat_grava_questor() {
                         const situacao = response.data[i].situacao == 'Autorizada' ? '0' : '2'
 
                         const recordExists: boolean = await checkIfRecordExists(chaveacessoformatado);
+
+                        console.log('Verificação de Existencia: ' + recordExists)
 
                         if (recordExists) {
 
@@ -297,6 +299,8 @@ export async function job_sat_grava_questor() {
 
                         } else {
 
+                            console.log(`Novo registro para chave ${chaveacessoformatado}.`)
+
                             const sql = `INSERT INTO LCTOFISSAI
                             (CODIGOEMPRESA, CHAVELCTOFISSAI, CODIGOESTAB, CODIGOPESSOA, NUMERONF, NUMERONFFINAL, ESPECIENF, SERIENF, DATALCTOFIS
                             , VALORCONTABIL, BASECALCULOIPI, VALORIPI, ISENTASIPI, OUTRASIPI, CONTRIBUINTE, COMPLHIST
@@ -308,6 +312,9 @@ export async function job_sat_grava_questor() {
                             `
 
                             const insertSuccess: boolean = await executeQuery(sql);
+                            
+                            console.log('Inserido com Sucesso? ' + insertSuccess);
+                            
                             if (insertSuccess) {
                                 await axios.post('https://api.aws.inf.br/connect/sat/questor',
                                     {
