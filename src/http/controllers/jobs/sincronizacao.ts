@@ -275,7 +275,7 @@ export async function job_sat_grava_questor() {
 
                         console.log('Verificação de Existencia: ' + recordExists)
 
-                        if (recordExists) {
+                        if (recordExists == true) {
 
                             await updateSituacao(chaveacessoformatado, situacao);
                             console.log(`Registro com chave ${chaveacessoformatado} já existe. Situação atualizada.`);
@@ -312,9 +312,9 @@ export async function job_sat_grava_questor() {
                             `
 
                             const insertSuccess: boolean = await executeQuery(sql);
-                            
+
                             console.log('Inserido com Sucesso? ' + insertSuccess);
-                            
+
                             if (insertSuccess) {
                                 await axios.post('https://api.aws.inf.br/connect/sat/questor',
                                     {
@@ -386,8 +386,9 @@ async function checkIfRecordExists(chaveacessoformatado: string): Promise<boolea
 
 
 async function updateSituacao(chaveacessoformatado: string, situacao: string): Promise<void> {
-    const updateQuery: string = `UPDATE LCTOFISSAI SET CDSITUACAO = '${situacao}' WHERE CHAVENFESAI = '${chaveacessoformatado}'  AND CODIGOEMPRESA = '9999'`;
 
+    const updateQuery: string = `UPDATE LCTOFISSAI SET CDSITUACAO = '${situacao}' WHERE CHAVENFESAI = '${chaveacessoformatado}'  AND CODIGOEMPRESA = '9999'`;
+    console.log('Executando Atualização de Status: ', updateQuery)
     await executeQuery(updateQuery);
 }
 
