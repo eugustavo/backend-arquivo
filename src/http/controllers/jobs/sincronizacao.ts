@@ -235,89 +235,132 @@ export async function job_sinc_contas_banco_ctb() {
 
 }
 export async function job_sat_grava_questor() {
-    console.log('Iniciando Sincronização SAT AWS QUESTOR');
 
-    try {
-        const response = await axios.post('https://api.aws.inf.br/connect/sat/listar', {
+    console.log('Iniciando Sincronização SAT AWS QUESTOR')
+
+    axios.post('https://api.aws.inf.br/connect/sat/listar',
+        {
             tabela: 'sat_dfe_consulta_nfe'
-        }, {
+        },
+        {
             headers: {
                 contenType: 'application/json'
             }
-        });
+        })
+        .then(async function (response) {
+            if (response.status == 200) {
 
-        if (response.status === 200) {
-            const promises = response.data.map(async (item: { chaveacessoformatado: any; numerodocumento: any; seriedocumento: any; dataemissao: any; valortotalnota: string; ipi: any; valortotalicms: string; totalicmsst: string; ieemitente: any; operacao: string; situacao: string; }) => {
-                try {
-                    console.log(`Iniciando Sincronização SAT AWS QUESTOR Chave: ${item.chaveacessoformatado}`);
-                    console.log(item);
+                for (let i = 0; i < response.data.length; i++) {
+                    // for (let i = 0; i < 2; i++) {
 
-                    const numeronf = item.numerodocumento;
-                    const serienf = item.seriedocumento;
-                    const dataemissao = ConverteDataBrToDate(item.dataemissao);
-                    const valorTotalNota = item.valortotalnota.replace(',', '.');
-                    const ipi = item.ipi;
-                    const valortotalicms = item.valortotalicms.replace(',', '.');
-                    const totalicmsst = item.totalicmsst.replace(',', '.');
-                    const ieemitente = item.ieemitente;
-                    const chaveacessoformatado = item.chaveacessoformatado;
+                    try {
 
-                    const operacao = item.operacao === 'S' ? '1' : '0';
-                    const situacao = item.situacao === 'Autorizada' ? '0' : '2';
+                        console.log('Iniciando Sincronização SAT AWS QUESTOR Chave: ' + response.data[i].chaveacessoformatado)
+                        console.log(response.data[i])
 
-                    const recordExists = await checkIfRecordExists(chaveacessoformatado);
+                        const numeronf = response.data[i].numerodocumento
+                        const serienf = response.data[i].seriedocumento
+                        const dataemissao = ConverteDataBrToDate(response.data[i].dataemissao)
+                        const valorTotalNota = response.data[i].valortotalnota.replace(',', '.')
+                        const ipi = response.data[i].ipi
+                        const valortotalicms = response.data[i].valortotalicms.replace(',', '.')
+                        const totalicmsst = response.data[i].totalicmsst.replace(',', '.')
+                        const ieemitente = response.data[i].ieemitente
+                        const chaveacessoformatado = response.data[i].chaveacessoformatado
 
-                    if (recordExists) {
-                        await updateSituacao(chaveacessoformatado, situacao);
-                        console.log(`Registro com chave ${chaveacessoformatado} já existe. Situação atualizada.`);
-                        await updateStatusOnAWS(chaveacessoformatado, 'ATUALIZADO');
-                    } else {
-                        const sql = `INSERT INTO LCTOFISSAI
-                        (CODIGOEMPRESA, CHAVELCTOFISSAI, CODIGOESTAB, CODIGOPESSOA, NUMERONF, NUMERONFFINAL, ESPECIENF, SERIENF, DATALCTOFIS
-                        , VALORCONTABIL, BASECALCULOIPI, VALORIPI, ISENTASIPI, OUTRASIPI, CONTRIBUINTE, COMPLHIST
-                        , CODIGOTIPODCTOSINTEGRA, CDMODELO, CHAVENFESAI, EMITENTENF, FINALIDADEOPERACAO, INDPAGTO
-                        , MEIOPAGAMENTO, CDSITUACAO, CODIGOUSUARIO, DATAHORALCTOFIS, ORIGEMDADO, ACRESCIMOFINANCEIRO, CONCILIADA, CANCELADA )
-                        VALUES ('9999', null, '1', '1', '${numeronf}', '${numeronf}', 'NFE', '${serienf}', '${dataemissao}', '${valorTotalNota}',
-                        '${ipi}', '${valortotalicms}','${totalicmsst}','0','${operacao}','${ieemitente}','55','55','${chaveacessoformatado}','P','0','0','1',
-                        '${situacao}','2420','${moment().format('YYYY-MM-DD HH:mm:ss')}', '3', 0,0,0)
-                        `;
+                        const operacao = response.data[i].operacao == 'S' ? '1' : '0'
+                        const situacao = response.data[i].situacao == 'Autorizada' ? '0' : '2'
 
-                        const insertSuccess = await executeQuery(sql);
-                        const status = insertSuccess ? 'INSERIDO' : 'ERRO';
+                        const recordExists: boolean = await checkIfRecordExists(chaveacessoformatado);
 
-                        await updateStatusOnAWS(chaveacessoformatado, status);
+                        if (recordExists) {
 
-                        console.log(`Registro ${status.toLowerCase()} com chave ${chaveacessoformatado}.`);
+                            await updateSituacao(chaveacessoformatado, situacao);
+                            console.log(`Registro com chave ${chaveacessoformatado} já existe. Situação atualizada.`);
+
+                            await axios.post('https://api.aws.inf.br/connect/sat/questor',
+                                {
+                                    chaveacessoformatado: chaveacessoformatado,
+                                    status: 'ATUALIZADO'
+                                },
+                                {
+                                    headers: {
+                                        contenType: 'application/json'
+                                    }
+                                })
+                                .then(function (response) {
+                                    console.log(response.data)
+                                })
+                                .catch(function (error) {
+                                    console.log('Falha no Processo:', error)
+                                })
+
+                        } else {
+
+                            const sql = `INSERT INTO LCTOFISSAI
+                            (CODIGOEMPRESA, CHAVELCTOFISSAI, CODIGOESTAB, CODIGOPESSOA, NUMERONF, NUMERONFFINAL, ESPECIENF, SERIENF, DATALCTOFIS
+                            , VALORCONTABIL, BASECALCULOIPI, VALORIPI, ISENTASIPI, OUTRASIPI, CONTRIBUINTE, COMPLHIST
+                            , CODIGOTIPODCTOSINTEGRA, CDMODELO, CHAVENFESAI, EMITENTENF, FINALIDADEOPERACAO, INDPAGTO
+                            , MEIOPAGAMENTO, CDSITUACAO, CODIGOUSUARIO, DATAHORALCTOFIS, ORIGEMDADO, ACRESCIMOFINANCEIRO, CONCILIADA, CANCELADA )
+                            VALUES ('9999', null, '1', '1', '${numeronf}', '${numeronf}', 'NFE', '${serienf}', '${dataemissao}', '${valorTotalNota}',
+                            '${ipi}', '${valortotalicms}','${totalicmsst}','0','${operacao}','${ieemitente}','55','55','${chaveacessoformatado}','P','0','0','1',
+                            '${situacao}','2420','${moment().format('YYYY-MM-DD HH:mm:ss')}', '3', 0,0,0)
+                            `
+
+                            const insertSuccess: boolean = await executeQuery(sql);
+                            if (insertSuccess) {
+                                await axios.post('https://api.aws.inf.br/connect/sat/questor',
+                                    {
+                                        chaveacessoformatado: chaveacessoformatado,
+                                        status: 'INSERIDO'
+                                    },
+                                    {
+                                        headers: {
+                                            contenType: 'application/json'
+                                        }
+                                    })
+                                    .then(function (response) {
+                                        console.log(response.data)
+                                    })
+                                    .catch(function (error) {
+                                        console.log('Falha no Processo:', error)
+                                    })
+
+                                console.log(`Novo registro inserido com chave ${chaveacessoformatado}.`);
+                            } else {
+                                console.log(`Erro ao inserir novo registro com chave ${chaveacessoformatado}.`);
+                                await axios.post('https://api.aws.inf.br/connect/sat/questor',
+                                    {
+                                        chaveacessoformatado: chaveacessoformatado,
+                                        status: 'ERRO'
+                                    },
+                                    {
+                                        headers: {
+                                            contenType: 'application/json'
+                                        }
+                                    })
+                                    .then(function (response) {
+                                        console.log(response.data)
+                                    })
+                                    .catch(function (error) {
+                                        console.log('Falha no Processo:', error)
+                                    })
+                            }
+                        }
+
+                    } catch (error) {
+                        console.log('Erro ao Inserir SAT: ', error)
                     }
-                } catch (error) {
-                    console.log('Erro ao Inserir SAT:', error);
                 }
-            });
-
-            await Promise.all(promises);
-        } else {
-            console.log('Erro ao Baixar SAT');
-        }
-    } catch (error) {
-        console.log('Falha no Processo:', error);
-    }
-}
-
-
-
-async function updateStatusOnAWS(chaveacessoformatado: string, status: string) {
-    try {
-        await axios.post('https://api.aws.inf.br/connect/sat/questor', {
-            chaveacessoformatado: chaveacessoformatado,
-            status: status
-        }, {
-            headers: {
-                contenType: 'application/json'
+            } else {
+                console.log('Erro ao Baixar SAT')
             }
-        });
-    } catch (error) {
-        console.log('Falha no Processo:', error);
-    }
+        })
+        .catch(function (error) {
+            console.log('Falha no Processo:', error)
+        })
+
+
 }
 
 async function checkIfRecordExists(chaveacessoformatado: string): Promise<boolean> {
