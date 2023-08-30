@@ -376,7 +376,7 @@ async function checkIfRecordExists(chaveacessoformatado: string): Promise<boolea
     try {
         const result: any[] = await executeQueryWithResult(query);
         console.log('Resultado da Query de Duplicidade: ', result);
-        return Number(result[0].records) > 0; // Corrected property name
+        return Number(result[0].RECORDS) > 0; // Corrected property name
     } catch (error) {
         console.error('Erro ao verificar existência do registro: ', error);
         return false; // An error occurred, treat as if record doesn't exist
