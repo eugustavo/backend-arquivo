@@ -1,6 +1,5 @@
 const fs = require('fs');
 
-
 process.on('uncaughtException', (error) => {
   console.error('Erro não tratado:', error);
   logError(error);
@@ -29,7 +28,8 @@ import moment from 'moment';
 import {
   job_sinc_funcionarios,
   job_sinc_empresas,
-  job_sinc_contas_banco_ctb
+  job_sinc_contas_banco_ctb,
+  job_sat_grava_questor
 } from './http/controllers/jobs/sincronizacao';
 
 var os = require("os");
@@ -46,6 +46,13 @@ const jobSincronizacao = schedule.scheduleJob('0 19 * * *', async function () {
   console.log('Iniciando Job Agendado de Sincronização de Contas Contábeis Bancárias em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
   await job_sinc_contas_banco_ctb()
   console.log('Finalizando Job Agendado de Sincronização de Contas Contábeis Bancárias em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
+
+});
+
+const jobSatQuestor = schedule.scheduleJob('0 22 * * *', async function () {
+  console.log('Iniciando Job Agendado SAT QUESTOR em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
+  await job_sat_grava_questor()
+  console.log('Finalizando Job Agendado SAT QUESTOR em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
 
 });
 
