@@ -113,6 +113,24 @@ export async function job_sinc_empresas() {
 
     console.log('Iniciando Sincronização Agendada de Empresas')
 
+    axios.post('https://api.aws.inf.br/connect/questor/manutencao/empresas/inativacao',
+        {},
+        {
+            headers: {
+                contenType: 'application/json'
+            }
+        })
+        .then(function (response) {
+            if (response.status === 200) {
+                console.log('Empresas Inativadas com Sucesso')
+            } else {
+                console.log('Erro ao Inativar Empresas')
+            }
+        })
+        .catch(function (error) {
+            console.log('Falha no Processo:', error)
+        })
+
     const listaSincronizar: any = await query_sinc_empresas()
 
     console.log('Total de Empresas para Sincronizar: ' + listaSincronizar.length)
