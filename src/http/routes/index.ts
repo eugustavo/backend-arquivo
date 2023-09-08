@@ -1,49 +1,49 @@
 import { FastifyInstance } from 'fastify'
 
-import { nfs_indice } from '../controllers/auditor_fiscal/notas_nao_lancadas/indice'
 import { nfs_detalhe } from '../controllers/auditor_fiscal/notas_nao_lancadas/detalhe'
+import { nfs_indice } from '../controllers/auditor_fiscal/notas_nao_lancadas/indice'
 import { nfs_informa_motivo } from '../controllers/auditor_fiscal/notas_nao_lancadas/informa_motivo'
 
+import { cfop_update_cfop } from '../controllers/auditor_fiscal/cfop_produtos/atualizar_cfop'
 import { cfopProdutos } from '../controllers/auditor_fiscal/cfop_produtos/cfop_detalhe'
 import { cfopResumo } from '../controllers/auditor_fiscal/cfop_produtos/cfop_resumo'
-import { cfop_update_cfop } from '../controllers/auditor_fiscal/cfop_produtos/atualizar_cfop'
 
-import { difal_dif_valor_detalhe } from '../controllers/auditor_fiscal/difal/dif_vl_contabil_detalhe'
-import { difal_dif_valor } from '../controllers/auditor_fiscal/difal/dif_vl_contabil'
-import { difal_ref_prod } from '../controllers/auditor_fiscal/difal/rev_prod'
-import { difal_ref_forn } from '../controllers/auditor_fiscal/difal/rev_forn'
-import { difal_get_aliq } from '../controllers/auditor_fiscal/difal/get_aliq'
 import { difal_update_aliq } from '../controllers/auditor_fiscal/difal/atualizar_aliq'
+import { DifaInternaResumo } from '../controllers/auditor_fiscal/difal/dif_interna'
+import { difal_dif_valor } from '../controllers/auditor_fiscal/difal/dif_vl_contabil'
+import { difal_dif_valor_detalhe } from '../controllers/auditor_fiscal/difal/dif_vl_contabil_detalhe'
 import { difal_difa_antecipacao } from '../controllers/auditor_fiscal/difal/difa_antecipacao'
 import { difal_difa_inserir } from '../controllers/auditor_fiscal/difal/difa_antecipacao_inserir'
-import { DifaInternaResumo } from '../controllers/auditor_fiscal/difal/dif_interna'
+import { difal_get_aliq } from '../controllers/auditor_fiscal/difal/get_aliq'
+import { difal_ref_forn } from '../controllers/auditor_fiscal/difal/rev_forn'
+import { difal_ref_prod } from '../controllers/auditor_fiscal/difal/rev_prod'
 
-import { cmi_simples_nacional_empresas } from '../controllers/cmi/simples_nacional/empresas'
+import { cmi_canais_envio } from '../controllers/cmi/canais_envio'
 import { cmi_simples_nacional_analistas } from '../controllers/cmi/simples_nacional/analistas'
 import { cmi_simples_nacional_apuracao } from '../controllers/cmi/simples_nacional/apuracao'
-import { cmi_canais_envio } from '../controllers/cmi/canais_envio'
+import { cmi_simples_nacional_empresas } from '../controllers/cmi/simples_nacional/empresas'
 
 import { cmi_icms_1449_empresas } from '../controllers/cmi/icms_1449/empresas'
 
-import { listas_empresas_analista } from '../controllers/listas/empresas_analista'
-import { listas_empresas_ativas } from '../controllers/listas/empresas_ativas'
 import { listas_cfop_empresa } from '../controllers/listas/cfop_empresa'
 import { listas_cst_icms } from '../controllers/listas/cst_icms'
 import { listas_cst_ipi } from '../controllers/listas/cst_ipi'
+import { listas_empresas_analista } from '../controllers/listas/empresas_analista'
+import { listas_empresas_ativas } from '../controllers/listas/empresas_ativas'
 
+import { sinc_contas_ctb_bancos } from '../controllers/sincronizacao/contas_ctb_bancos'
 import { sinc_funcionarios } from '../controllers/sincronizacao/funcionarios'
 import { sinc_operadores } from '../controllers/sincronizacao/operadores'
-import { sinc_contas_ctb_bancos } from '../controllers/sincronizacao/contas_ctb_bancos'
-import { sinc_vencimentos_impostos } from '../controllers/sincronizacao/vencimentos_impostos'
 import { sat_55_emitidas } from '../controllers/sincronizacao/sat_55_emitidas'
+import { sinc_vencimentos_impostos } from '../controllers/sincronizacao/vencimentos_impostos'
 
+import { cmi_simples_nacional_debito } from '../controllers/cmi/simples_nacional/debito'
 import { extrato_insert } from '../controllers/lancamentos_bancarios/integrar_extrato'
 import { sinc_empresas } from '../controllers/sincronizacao/empresas'
-import { cmi_simples_nacional_debito } from '../controllers/cmi/simples_nacional/debito'
 
-import { job_sat_grava_questor, job_sinc_contas_banco_ctb, job_sinc_empresas, job_sinc_funcionarios } from '../controllers/jobs/sincronizacao'
 import { cmi_icms_1449_apuracao } from '../controllers/cmi/icms_1449/apuracao'
 import { cmi_icms_1449_debito } from '../controllers/cmi/icms_1449/debito'
+import { job_sat_grava_questor, job_sinc_contas_banco_ctb, job_sinc_empresas, job_sinc_empresas_sat, job_sinc_funcionarios } from '../controllers/jobs/sincronizacao'
 
 import { cmi_pis_cofins_apuracao } from '../controllers/cmi/pis_cofins/apuracao'
 import { cmi_pis_cofins_debito } from '../controllers/cmi/pis_cofins/debito'
@@ -124,4 +124,5 @@ export async function appRoutes(app: FastifyInstance) {
   app.get('/sincronizacao/job/funcionarios', job_sinc_funcionarios)
   app.get('/sincronizacao/job/empresas', job_sinc_empresas)
   app.get('/sincronizacao/job/sat', job_sat_grava_questor)
+  app.get('/sincronizacao/job/sat/empresas', job_sinc_empresas_sat)
 }

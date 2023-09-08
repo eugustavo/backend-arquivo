@@ -20,16 +20,17 @@ function logError(error: any) {
   });
 }
 
-import { app } from './app'
-import { env } from './env'
-import schedule from 'node-schedule';
 import moment from 'moment';
+import schedule from 'node-schedule';
+import { app } from './app';
+import { env } from './env';
 
 import {
-  job_sinc_funcionarios,
-  job_sinc_empresas,
+  job_sat_grava_questor,
   job_sinc_contas_banco_ctb,
-  job_sat_grava_questor
+  job_sinc_empresas,
+  job_sinc_empresas_sat,
+  job_sinc_funcionarios
 } from './http/controllers/jobs/sincronizacao';
 
 var os = require("os");
@@ -43,6 +44,9 @@ const jobSincronizacao = schedule.scheduleJob('0 19 * * *', async function () {
   console.log('Iniciando Job Agendado de Sincronização de Empresas em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
   await job_sinc_empresas()
   console.log('Finalizando Job Agendado de Sincronização de Empresas em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
+  console.log('Iniciando Job Agendado de Sincronização de Empresas SAT em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
+  await job_sinc_empresas_sat()
+  console.log('Finalizando Job Agendado de Sincronização de Empresas SAT em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
   console.log('Iniciando Job Agendado de Sincronização de Contas Contábeis Bancárias em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
   await job_sinc_contas_banco_ctb()
   console.log('Finalizando Job Agendado de Sincronização de Contas Contábeis Bancárias em ' + moment().format('DD/MM/YYYY HH:mm:ss'));

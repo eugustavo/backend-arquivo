@@ -1,11 +1,12 @@
-import axios from 'axios'
+import { query_sinc_contas_ctb_bancos } from '@/database/queries/sincronizacao/sinc_contas_ctb_bancos';
+import { query_sinc_empresas } from '@/database/queries/sincronizacao/sinc_empresas';
+import { query_sinc_funcionarios } from '@/database/queries/sincronizacao/sinc_funcionarios';
+import axios from 'axios';
 import moment from 'moment';
-import { query_sinc_funcionarios } from '@/database/queries/sincronizacao/sinc_funcionarios'
-import { query_sinc_empresas } from '@/database/queries/sincronizacao/sinc_empresas'
-import { query_sinc_contas_ctb_bancos } from '@/database/queries/sincronizacao/sinc_contas_ctb_bancos'
 
-import firebird from 'node-firebird'
-import { options } from '../../../lib/firebird'
+import { query_sat_55_emitidas } from '@/database/queries/sincronizacao/sinc_sat_55_emitidas';
+import firebird from 'node-firebird';
+import { options } from '../../../lib/firebird';
 
 function ConverteDataBrToDate(data: any) {
     const mes = data.substring(3, 5)
@@ -54,60 +55,6 @@ export async function job_sinc_funcionarios() {
             })
     }
 }
-
-
-
-
-// export async function job_sinc_empresas() {
-
-//     console.log('Iniciando Sincronização Agendada de Empresas')
-
-//     const listaSincronizar: any = await query_sinc_empresas()
-
-//     console.log('Total de Empresas para Sincronizar: ' + listaSincronizar.length)
-
-//     for (let i = 0; i < listaSincronizar.length; i++) {
-
-//         axios.post('https://api.aws.inf.br/connect/questor/empresas/incluir',
-//             {
-//                 id: listaSincronizar[i].CODIGOEMPRESA,
-//                 nome: listaSincronizar[i].FANTASIA,
-//                 razao: listaSincronizar[i].RAZAO,
-//                 cnpj: listaSincronizar[i].CNPJ,
-//                 empresa: listaSincronizar[i].QUESTOR_EMPRESA,
-//                 estabelecimento: listaSincronizar[i].QUESTOR_ESTABELECIMENTO,
-//                 datacad: listaSincronizar[i].DATA_CAD,
-//                 endereco: listaSincronizar[i].TIPO + ' ' + listaSincronizar[i].ENDERECO,
-//                 numero: listaSincronizar[i].NUMERO,
-//                 bairro: listaSincronizar[i].BAIRRO,
-//                 cidade: listaSincronizar[i].CIDADE,
-//                 uf: listaSincronizar[i].UF
-//             },
-//             {
-//                 headers: {
-//                     contenType: 'application/json'
-//                 }
-//             })
-
-//             .then(function (response) {
-
-//                 if (response.status === 201) {
-
-//                     console.log('Empresa Incluída com Sucesso')
-
-//                 } else {
-//                     console.log('Erro ao Incluir Empresa')
-//                 }
-
-//             })
-//             .catch(function (error) {
-//                 console.log('Falha no Processo:', error)
-
-//             })
-
-//     }
-
-// }
 
 export async function job_sinc_empresas() {
 
@@ -212,45 +159,7 @@ export async function job_sinc_contas_banco_ctb() {
             })
     }
 
-    // console.log('Iniciando Sincronização Agendada de Contas Contábeis Bancárias')
-
-    // const listaSincronizar: any = await query_sinc_contas_ctb_bancos()
-
-    // console.log('Total de Contas Contábeis Bancárias para Sincronizar: ' + listaSincronizar.length)
-
-    // for (let i = 0; i < listaSincronizar.length; i++) {
-
-    //     axios.post('https://api.aws.inf.br/connect/questor/contas_bancos_ctb/incluir',
-    //         {
-    //             empresa: listaSincronizar[i].CODIGOEMPRESA,
-    //             estab: listaSincronizar[i].CODIGOESTAB,
-    //             conta: listaSincronizar[i].CONTACTB,
-    //             descricao: listaSincronizar[i].DESCRCONTA,
-    //         },
-    //         {
-    //             headers: {
-    //                 contenType: 'application/json'
-    //             }
-    //         })
-
-    //         .then(function (response) {
-
-    //             if (response.status === 201) {
-
-    //                 console.log('Conta Contábel Bancária Incluída com Sucesso')
-
-    //             } else {
-    //                 console.log('Erro ao Incluir Conta Contábel Bancária')
-    //             }
-
-    //         })
-    //         .catch(function (error) {
-    //             console.log('Falha no Processo:', error)
-
-    //         })
-
-    // }
-
+  
 }
 export async function job_sat_grava_questor() {
 
@@ -449,4 +358,50 @@ async function executeQueryWithResult(query: string): Promise<any[]> {
             });
         });
     });
+}
+
+export async function job_sinc_empresas_sat() {
+
+    console.log('Iniciando Sincronização Agendada de Empresas SAT')
+
+    const listaSincronizar: any = await query_sat_55_emitidas()
+
+    console.log('Total de Funcionários para Sincronizar: ' + listaSincronizar.length)
+
+    const tamanhoGrupo = 1500
+    for (let i = 0; i < listaSincronizar.length; i += tamanhoGrupo) {
+        const grupo = listaSincronizar.slice(i, i + tamanhoGrupo)
+        const empresas = grupo.map((empresa: any) => {
+            return {
+                processo: 'sat_dfe_consulta_nfe_emitidas',
+                empresa: empresa.CODIGOEMPRESA,
+                estab: empresa.CODIGOESTAB,
+                nomeestab: empresa.NOMEESTAB,
+                cnpj: empresa.CNPJ,
+                codigocont: empresa.CODIGOCONT,
+                nomecont: empresa.NOMECONT,
+                usuariosat: empresa.USUARIOSAT,
+                senhasat: empresa.SENHASAT,
+                codigousuario: empresa.CODIGOUSUARIO,
+                nomeusuario: empresa.NOMEUSUARIO
+            }
+        })
+        axios.post('https://api.aws.inf.br/connect/sat/empresas/sincronizar',
+            empresas,
+            {
+                headers: {
+                    contenType: 'application/json'
+                }
+            })
+            .then(function (response) {
+                if (response.status === 201) {
+                    console.log('Empresas SAT Incluídas com Sucesso')
+                } else {
+                    console.log('Erro ao Incluir Empresas SAT')
+                }
+            })
+            .catch(function (error) {
+                console.log('Falha no Processo:', error)
+            })
+    }
 }
