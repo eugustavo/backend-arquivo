@@ -13,7 +13,9 @@ export function query_sat_55_emitidas() {
   b.CODIGOCONT,
   B.NOMECONT,
   B.USUARIOSAT,
-  B.SENHASAT
+  B.SENHASAT,
+  b.CODIGOUSUARIO,
+  b.NOMEUSUARIO
          from
  (select
  distinct 
@@ -31,9 +33,12 @@ export function query_sat_55_emitidas() {
   d.CODIGOCONT,
   d.NOMECONT,
   d.USUARIOSAT,
-  d.SENHASAT
+  d.SENHASAT,
+  e.CODIGOUSUARIO,
+  e.NOMEUSUARIO
    from estab b left join CFGEMPRESAGEM c on (b.CODIGOEMPRESA = c.CODIGOEMPRESA )
-  left join contador d on (c.CONTADORRESPCNPJ = d.CODIGOCONT) 
+  left join contador d on (c.CONTADORRESPCNPJ = d.CODIGOCONT)
+  left join usuario e on (b.CVMAUDITOR = e.CODIGOUSUARIO) 
   where b.DATAENCERATIV = '31.12.2100' and b.NOMEESTAB not like '%BASE%' and b.SIGLAESTADO = 'SC' ) b on (a.CODIGOEMPRESA = b.CODIGOEMPRESA and a.CODIGOESTAB = b.CODIGOESTAB)`
 
   console.log(sql)
