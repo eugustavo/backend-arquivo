@@ -1,5 +1,5 @@
 const fs = require('fs');
-
+const { relatorio_sat } = require('./selenium/relatorio_sat');
 process.on('uncaughtException', (error) => {
   console.error('Erro não tratado:', error);
   logError(error);
@@ -54,9 +54,9 @@ const jobSincronizacao = schedule.scheduleJob('0 19 * * *', async function () {
 });
 
 const jobSeleniumSat = schedule.scheduleJob('0 10 * * *', async function () {
-  console.log('Iniciando Job Agendado SAT QUESTOR em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
-  await job_sat_grava_questor()
-  console.log('Finalizando Job Agendado SAT QUESTOR em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
+  console.log('Iniciando Job Agendado SAT SELENIUM em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
+  await relatorio_sat()
+  console.log('Finalizando Job Agendado SAT SELENIUM em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
 
 });
 

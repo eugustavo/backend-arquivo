@@ -1,3 +1,4 @@
+import { env } from '@/env';
 const { Builder, By, Key, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 const fs = require('fs');
@@ -12,7 +13,7 @@ const { TextractClient, DetectDocumentTextCommand } = require("@aws-sdk/client-t
 const client = new TextractClient({
     region: 'us-east-2',
     credentials: {
-        accessKeyId: env.AWS_ACCESS_KEY_ID,
+        accessKeyId: env.AWS_SECRET_ACCESS_KEY,
         secretAccessKey: env.AWS_SECRET_ACCESS_KEY
     }
 });
@@ -194,7 +195,7 @@ async function addToLog(cnpj, date, status, codigoEmpresa, codigoEstabelecimento
     console.log('Log entry added to log.txt');
 }
 
-async function relatorio_sat() {
+export async function relatorio_sat() {
 
     const listaEmpresas = await axios.get('https://api.aws.inf.br/connect/sat/empresas/listar?processo=sat_dfe_consulta_nfe_emitidas');
 
