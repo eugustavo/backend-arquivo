@@ -12,8 +12,8 @@ const { TextractClient, DetectDocumentTextCommand } = require("@aws-sdk/client-t
 const client = new TextractClient({
     region: 'us-east-2',
     credentials: {
-        accessKeyId: 'AKIA25ZRTJM4TLOR55M7',
-        secretAccessKey: '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',
+        accessKeyId: env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: env.AWS_SECRET_ACCESS_KEY
     }
 });
 
