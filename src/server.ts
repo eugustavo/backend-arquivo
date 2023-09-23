@@ -53,6 +53,13 @@ const jobSincronizacao = schedule.scheduleJob('0 19 * * *', async function () {
 
 });
 
+const jobSeleniumSat = schedule.scheduleJob('0 10 * * *', async function () {
+  console.log('Iniciando Job Agendado SAT QUESTOR em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
+  await job_sat_grava_questor()
+  console.log('Finalizando Job Agendado SAT QUESTOR em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
+
+});
+
 const jobSatQuestor = schedule.scheduleJob('0 22 * * *', async function () {
   console.log('Iniciando Job Agendado SAT QUESTOR em ' + moment().format('DD/MM/YYYY HH:mm:ss'));
   await job_sat_grava_questor()
